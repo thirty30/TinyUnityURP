@@ -1,0 +1,10 @@
+.vsconfig
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
+TinyUnity.sln
+.vs/
+Library/
+Logs/
+obj/
+Temp/
+UserSettings/
