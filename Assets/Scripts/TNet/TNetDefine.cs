@@ -33,7 +33,7 @@ namespace TNet
 
         public int GetHeadSize()
         {
-            return 9;
+            return sizeof(int) + sizeof(int) + sizeof(byte);
         }
 
         public int Serialize(byte[] aBuffer)

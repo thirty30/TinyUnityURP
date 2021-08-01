@@ -45,6 +45,10 @@ public class Main : MonoBehaviour
         rMsgHead.Deserialize(aBuffer);
         int nMsgHeadLen = rMsgHead.GetHeadSize();
 
+        int nOffset = nMsgHeadLen;
+        Test t = new Test();
+        t.Deserialize(aBuffer, rMsgHead.BodySize, ref nOffset);
+
     }
 
     private void OnException(SocketException aException)
@@ -123,6 +127,8 @@ public class Main : MonoBehaviour
         t.Value15.Add("123123");
         t.Value15.Add("sfesf");
         t.Value15.Add("ssfi89e890");
+        this.SendMessageToServer(MessageID.C2S_LOGIN, t);
+        t.Value15.Add("fffffff");
         this.SendMessageToServer(MessageID.C2S_LOGIN, t);
     }
 }

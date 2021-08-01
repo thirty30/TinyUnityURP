@@ -145,7 +145,6 @@ namespace TNet
             }
             catch (SocketException ex)
             {
-                this.mSocket.Shutdown(SocketShutdown.Both);
                 this.mSocket.Close();
                 this.mCallbackException?.Invoke(ex);
                 this.mCallbackDisconnect?.Invoke();
@@ -192,10 +191,10 @@ namespace TNet
                 }
                 int nNewLen = nCurLen * nRatio;
                 byte[] tempBuffer = new byte[nNewLen];
-                this.mSendBuffer.CopyTo(tempBuffer, 0);
+                Array.Copy(this.mSendBuffer, tempBuffer, this.mSendLen);
                 this.mSendBuffer = tempBuffer;
             }
-            aData.CopyTo(this.mSendBuffer, this.mSendLen);
+            Array.Copy(aData, 0, this.mSendBuffer, this.mSendLen, aSize);
             this.mSendLen += aSize;
         }
 
@@ -213,7 +212,6 @@ namespace TNet
             }
             catch (SocketException ex)
             {
-                this.mSocket.Shutdown(SocketShutdown.Both);
                 this.mSocket.Close();
                 this.mCallbackException?.Invoke(ex);
                 this.mCallbackDisconnect?.Invoke();
