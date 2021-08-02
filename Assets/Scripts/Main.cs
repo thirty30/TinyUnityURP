@@ -34,21 +34,19 @@ public class Main : MonoBehaviour
 
     private void OnDisconnect()
     {
-        Debug.Log("OnDisconnect");
+        //Debug.Log("OnDisconnect");
+        Debug.Log("receive not completed packet");
     }
 
     private void OnReceive(byte[] aBuffer)
     {
         Debug.Log("OnReceive");
-
         TNetMessageHead rMsgHead = new TNetMessageHead();
-        rMsgHead.Deserialize(aBuffer);
-        int nMsgHeadLen = rMsgHead.GetHeadSize();
+        rMsgHead.Deserialize(aBuffer, 0);
 
-        int nOffset = nMsgHeadLen;
         Test t = new Test();
+        int nOffset = rMsgHead.GetHeadSize();
         t.Deserialize(aBuffer, rMsgHead.BodySize, ref nOffset);
-
     }
 
     private void OnException(SocketException aException)
@@ -56,7 +54,7 @@ public class Main : MonoBehaviour
         Debug.Log("OnException:" + aException.Message);
     }
 
-    private int GetPacketSize(byte[] aBuffer, int aSize)
+    private int GetPacketSize(byte[] aBuffer, int aSize, int aIndex)
     {
         TNetMessageHead rMsgHead = new TNetMessageHead();
         int nMsgHeadLen = rMsgHead.GetHeadSize();
@@ -64,25 +62,27 @@ public class Main : MonoBehaviour
         {
             return 0;
         }
-        rMsgHead.Deserialize(aBuffer);
+        rMsgHead.Deserialize(aBuffer, aIndex);
         return rMsgHead.BodySize + nMsgHeadLen;
     }
 
     private void SendMessageToServer(int aMsgID, ITNetMessage aMsg)
     {
-        int nOffset = 0;
+        int nBodyOffset = 0;
         byte[] body = new byte[1024];
-        aMsg.Serialize(body, 1024, ref nOffset);
+        aMsg.Serialize(body, 1024, ref nBodyOffset);
 
         TNetMessageHead rMsgHead = new TNetMessageHead();
         rMsgHead.MsgID = aMsgID;
-        rMsgHead.BodySize = nOffset;
+        rMsgHead.BodySize = nBodyOffset;
         rMsgHead.IsCompressed = 0;
+        int nHeadLen = rMsgHead.GetHeadSize();
 
         byte[] buffer = new byte[1024];
-        int nHeadLen = rMsgHead.Serialize(buffer);
-        Array.Copy(body, 0, buffer, nHeadLen, nOffset);
-        this.mNet.WriteData(buffer, nHeadLen + nOffset);
+        rMsgHead.Serialize(buffer, 0);
+
+        Array.Copy(body, 0, buffer, nHeadLen, rMsgHead.BodySize);
+        this.mNet.WriteData(buffer, nHeadLen + rMsgHead.BodySize);
     }
     
 
@@ -128,7 +128,7 @@ public class Main : MonoBehaviour
         t.Value15.Add("sfesf");
         t.Value15.Add("ssfi89e890");
         this.SendMessageToServer(MessageID.C2S_LOGIN, t);
-        t.Value15.Add("fffffff");
-        this.SendMessageToServer(MessageID.C2S_LOGIN, t);
+        //t.Value15.Add("fffffff");
+        //this.SendMessageToServer(MessageID.C2S_LOGIN, t);
     }
 }

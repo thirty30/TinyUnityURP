@@ -12,7 +12,7 @@ namespace TNet
     public delegate void OnDisconnect();
     public delegate void OnReceive(byte[] aBuffer);
     public delegate void OnException(SocketException aException);
-    public delegate int GetPacketSize(byte[] aBuffer, int aSize);
+    public delegate int GetPacketSize(byte[] aBuffer, int aSize, int aIndex);
 
     public interface ITNetMessage
     {
@@ -36,22 +36,18 @@ namespace TNet
             return sizeof(int) + sizeof(int) + sizeof(byte);
         }
 
-        public int Serialize(byte[] aBuffer)
+        public void Serialize(byte[] aBuffer, int aIndex)
         {
-            int nOffset = 0;
-            TNetEncode.SerializeN32(this.MsgID, aBuffer, ref nOffset);
-            TNetEncode.SerializeN32(this.BodySize, aBuffer, ref nOffset);
-            TNetEncode.SerializeN8(this.IsCompressed, aBuffer, ref nOffset);
-            return nOffset;
+            TNetEncode.SerializeN32(this.MsgID, aBuffer, ref aIndex);
+            TNetEncode.SerializeN32(this.BodySize, aBuffer, ref aIndex);
+            TNetEncode.SerializeN8(this.IsCompressed, aBuffer, ref aIndex);
         }
 
-        public int Deserialize(byte[] aBuffer)
+        public void Deserialize(byte[] aBuffer, int aIndex)
         {
-            int nOffset = 0;
-            this.MsgID = TNetEncode.DeserializeN32(aBuffer, ref nOffset);
-            this.BodySize = TNetEncode.DeserializeN32(aBuffer, ref nOffset);
-            this.IsCompressed = TNetEncode.DeserializeN8(aBuffer, ref nOffset);
-            return nOffset;
+            this.MsgID = TNetEncode.DeserializeN32(aBuffer, ref aIndex);
+            this.BodySize = TNetEncode.DeserializeN32(aBuffer, ref aIndex);
+            this.IsCompressed = TNetEncode.DeserializeN8(aBuffer, ref aIndex);
         }
     }
 }

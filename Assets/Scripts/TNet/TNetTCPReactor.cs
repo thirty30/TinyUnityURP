@@ -120,28 +120,47 @@ namespace TNet
                     this.mReceiveBuffer = tempBuffer;
                     return true;
                 }
-                
-                int nPacketSize = 0;
-                if (this.mCallbackGetPacketSize == null)
-                {
-                    nPacketSize = this.mReceiveLen;
-                }
-                else
-                {
-                    nPacketSize = this.mCallbackGetPacketSize.Invoke(this.mReceiveBuffer, this.mReceiveLen);
-                }
 
-                if (nPacketSize > 0 && nPacketSize <= this.mReceiveLen)
+                int nOffset = 0;
+                while (true)
                 {
-                    byte[] msg = new byte[nPacketSize];
-                    Array.Copy(this.mReceiveBuffer, msg, nPacketSize);
-
-                    lock(this.mLockObj)
+                    if (this.mReceiveLen == 0)
                     {
-                        this.mMessageObjs.Add(msg);
+                        break;
                     }
-                }
 
+                    int nPacketSize = 0;
+                    if (this.mCallbackGetPacketSize == null)
+                    {
+                        nPacketSize = this.mReceiveLen;
+                    }
+                    else
+                    {
+                        nPacketSize = this.mCallbackGetPacketSize.Invoke(this.mReceiveBuffer, this.mReceiveLen, nOffset);
+                    }
+
+                    if (nPacketSize > 0 && nPacketSize <= this.mReceiveLen)
+                    {
+                        byte[] msg = new byte[nPacketSize];
+                        Array.Copy(this.mReceiveBuffer, nOffset, msg, 0, nPacketSize);
+                        nOffset += nPacketSize;
+                        this.mReceiveLen -= nPacketSize;
+
+                        lock (this.mLockObj)
+                        {
+                            this.mMessageObjs.Add(msg);
+                        }
+                        continue;
+                    }
+
+                    if (nOffset > 0)
+                    {
+                        byte[] tempBuffer = new byte[this.mReceiveLen];
+                        Array.Copy(this.mReceiveBuffer, nOffset, tempBuffer, 0, this.mReceiveLen);
+                        Array.Copy(tempBuffer, 0, this.mReceiveBuffer, 0, this.mReceiveLen);
+                    }
+                    break;
+                }
             }
             catch (SocketException ex)
             {
