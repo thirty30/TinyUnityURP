@@ -6,20 +6,16 @@ using UnityEngine.UI;
 
 namespace HotfixGameplay.GUI
 {
-    public class UITest
+    public class UIMain
     {
-        private Button BtnTest;
-        private TGUIText TextTest;
-
         public void OnBindingComponent(object[] aComponents)
         {
-            this.BtnTest = (aComponents[0] as GameObject).GetComponent<Button>();
-            this.TextTest = (aComponents[1] as GameObject).GetComponent<TGUIText>();
+
         }
 
         public void OnInitialize(params object[] parms)
         {
-            this.BtnTest.onClick.AddListener(this.OnBtnTestClick);
+
         }
 
         public void OnUpdate()
@@ -40,11 +36,6 @@ namespace HotfixGameplay.GUI
         public void OnDestroy()
         {
 
-        }
-
-        private void OnBtnTestClick()
-        {
-            this.TextTest.text = "Clicked";
         }
     }
 }

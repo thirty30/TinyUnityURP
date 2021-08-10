@@ -58,16 +58,28 @@ namespace TFramework.TNet
             this.mCallbackGetPacketSize = aCallbackGetPacketSize;
         }
 
-        public bool ConnectServer(string aIP, int aPort)
+        public bool InitSocket()
         {
             try
             {
                 this.mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            }
+            catch (SocketException ex)
+            {
+                this.mCallbackException?.Invoke(ex);
+                return false;
+            }
+            return true;
+        }
+
+        public bool ConnectServer(string aIP, int aPort)
+        {
+            try
+            {
                 IPEndPoint ep = new IPEndPoint(IPAddress.Parse(aIP), aPort);
                 this.mSocket.Connect(ep);
                 this.mCallbackConnect?.Invoke();
                 this.mNetWorker.Start(this);
-                //this.mSocket.Blocking = false;
             }
             catch (SocketException ex)
             {

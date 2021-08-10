@@ -37,7 +37,7 @@ namespace TFramework.TGUI
             return true;
         }
 
-        public void UpdateUI()
+        public void Update()
         {
             foreach (TUIBasePage uiPage in this.mReadyToAddList)
             {

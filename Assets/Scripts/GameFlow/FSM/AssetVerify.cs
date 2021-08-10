@@ -17,7 +17,7 @@ public class AssetVerify : TFSMStateBase
 
     public override void OnUpdateState()
     {
-        Main.GetSingleton().SetGameFlowState(this.State + 1);
+        this.FSM.SetState(this.mState + 1);
     }
 
     public override void OnExitState()

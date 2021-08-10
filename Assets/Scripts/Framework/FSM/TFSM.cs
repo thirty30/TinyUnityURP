@@ -16,6 +16,7 @@ namespace TFramework
             {
                 return false;
             }
+            aStateObj.FSM = this;
             this.mStateObjs.Add(nState, aStateObj);
             return true;
         }

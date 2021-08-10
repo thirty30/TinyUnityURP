@@ -73,8 +73,11 @@
     <Compile Include="Framework\Utility\ReflectionAssist.cs" />
     <Compile Include="Framework\Utility\Singleton.cs" />
     <Compile Include="GameFlow\HotfixMain.cs" />
-    <Compile Include="GUI\UITest.cs" />
-    <Compile Include="NetworkManager\NetWorkManager.cs" />
+    <Compile Include="GameFlow\HotfixLogin.cs" />
+    <Compile Include="GUI\UIMain.cs" />
+    <Compile Include="GUI\UILogin.cs" />
+    <Compile Include="NetworkManager\HotfixNetWork.cs" />
+    <Compile Include="NetworkManager\HotfixNetworkHandler.cs" />
     <Compile Include="NetworkManager\ProtocolDef.cs" />
     <Compile Include="Player\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

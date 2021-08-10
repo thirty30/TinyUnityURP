@@ -3,16 +3,21 @@ namespace TFramework
 {
     public class TFSMStateBase
     {
-        protected int State;
+        public TFSM FSM = null;
+
+        protected int mState = 0;
+
+        //为了生成ILRuntime Adapter而写的空构造函数,写逻辑不能使用
+        public TFSMStateBase() { }
 
         public TFSMStateBase(int aState)
         {
-            this.State = aState;
+            this.mState = aState;
         }
 
         public int GetState()
         {
-            return this.State;
+            return this.mState;
         }
 
         public void Update()

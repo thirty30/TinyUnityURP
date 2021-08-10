@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TFramework;
+using TFramework.TGUI;
 
 public class MainLoading : TFSMStateBase
 {
@@ -12,13 +13,17 @@ public class MainLoading : TFSMStateBase
 
     public override void OnEnterState() 
     {
-        AssetLoader.Init(EAssetLoadType.ASSET_BUNDLE);
         AssetLoader.LoadAB("loading_config");
+
+        TUIManager.GetSingleton().Initialize();
+        NetworkManager.GetSingleton().Initialize();
+
+        this.FSM.SetState(this.mState + 1);
     }
     
     public override void OnUpdateState() 
     {
-        Main.GetSingleton().SetGameFlowState(this.State + 1);
+        
     }
     
     public override void OnExitState() 
