@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TFramework;
 using TFramework.TGUI;
+using System.Collections;
 
 namespace HotfixGameplay
 {
@@ -43,5 +44,6 @@ namespace HotfixGameplay
             TUIManager.GetSingleton().RegisterUI("UIMain", "Assets/UI/UIMain.prefab");
             
         }
+
     }
 }

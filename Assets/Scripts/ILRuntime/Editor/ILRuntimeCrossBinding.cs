@@ -17,6 +17,11 @@ public class ILRuntimeCrossBinding
             sw.WriteLine(CrossBindingCodeGenerator.GenerateCrossBindingAdapterCode(typeof(TFramework.TFSMStateBase), "ILRuntimeAdapter"));
         }
 
+        using (StreamWriter sw = new StreamWriter("Assets/Scripts/ILRuntime/Adapter/MonoBehaviourAdapter.cs"))
+        {
+            sw.WriteLine(CrossBindingCodeGenerator.GenerateCrossBindingAdapterCode(typeof(UnityEngine.MonoBehaviour), "ILRuntimeAdapter"));
+        }
+        
         AssetDatabase.Refresh();
     }
 }

@@ -95,6 +95,9 @@ namespace TFramework
 
             //这里做一些ILRuntime的注册
 
+            //注册LitJson
+            LitJson.JsonMapper.RegisterILRuntimeCLRRedirection(this.ILRuntimeApp);
+
             //注册委托
             this.RegisterDelegate?.Invoke();
 

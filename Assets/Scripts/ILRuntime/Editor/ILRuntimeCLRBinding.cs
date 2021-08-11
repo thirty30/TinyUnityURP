@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 using ILRuntime.Runtime.Enviorment;
+using System.Collections.Generic;
 
 [System.Reflection.Obfuscation(Exclude = true)]
 public class ILRuntimeCLRBinding
@@ -16,7 +17,7 @@ public class ILRuntimeCLRBinding
         {
             rAppDomain.LoadAssembly(fs);
             InitILRuntime(rAppDomain);
-            ILRuntime.Runtime.CLRBinding.BindingCodeGenerator.GenerateBindingCode(rAppDomain, "Assets/Scripts/Hotfix/CLRBinding");
+            ILRuntime.Runtime.CLRBinding.BindingCodeGenerator.GenerateBindingCode(rAppDomain, "Assets/Scripts/ILRuntime/CLRBinding");
         }
 
         AssetDatabase.Refresh();
@@ -25,13 +26,13 @@ public class ILRuntimeCLRBinding
     //这里需要注册所有热更DLL中用到的跨域继承Adapter，否则无法正确抓取引用
     static void InitILRuntime(ILRuntime.Runtime.Enviorment.AppDomain aAppDomain)
     {
-        //Unity自己的
-        aAppDomain.RegisterCrossBindingAdaptor(new MonoBehaviourAdapter());
-        aAppDomain.RegisterCrossBindingAdaptor(new CoroutineAdapter());
-        aAppDomain.RegisterValueTypeBinder(typeof(Vector3), new Vector3Binder());
-
-        //自定义的
+        aAppDomain.RegisterCrossBindingAdaptor(new ILRuntimeAdapter.MonoBehaviourAdapter());
+        aAppDomain.RegisterCrossBindingAdaptor(new ILRuntimeAdapter.CoroutineAdapter());
         aAppDomain.RegisterCrossBindingAdaptor(new ILRuntimeAdapter.TFSMStateBaseAdapter());
+
+        aAppDomain.RegisterValueTypeBinder(typeof(Vector3), new ILRuntimeTypeBinder.Vector2Binder());
+        aAppDomain.RegisterValueTypeBinder(typeof(Vector3), new ILRuntimeTypeBinder.Vector3Binder());
+        aAppDomain.RegisterValueTypeBinder(typeof(Vector3), new ILRuntimeTypeBinder.QuaternionBinder());
     }
 }
 #endif

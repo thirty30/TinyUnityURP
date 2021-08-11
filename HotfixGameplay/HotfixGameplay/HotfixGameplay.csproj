@@ -74,6 +74,7 @@
     <Compile Include="Framework\Utility\Singleton.cs" />
     <Compile Include="GameFlow\HotfixMain.cs" />
     <Compile Include="GameFlow\HotfixLogin.cs" />
+    <Compile Include="GameFlow\TestValue.cs" />
     <Compile Include="GUI\UIMain.cs" />
     <Compile Include="GUI\UILogin.cs" />
     <Compile Include="NetworkManager\HotfixNetWork.cs" />

@@ -50,38 +50,6 @@ public class LoadHotfixPlugin : TFSMStateBase
         {
             return new UnityEngine.Events.UnityAction(() => { ((Action)act)(); });
         });
-
-        rAppDomain.DelegateManager.RegisterDelegateConvertor<TFramework.TNet.OnConnect>((act) =>
-        {
-            return new TFramework.TNet.OnConnect(() => { ((Action)act)(); });
-        });
-
-        rAppDomain.DelegateManager.RegisterDelegateConvertor<TFramework.TNet.OnDisconnect>((act) =>
-        {
-            return new TFramework.TNet.OnDisconnect(() => { ((Action)act)(); });
-        });
-
-        rAppDomain.DelegateManager.RegisterDelegateConvertor<TFramework.TNet.OnReceive>((act) =>
-        {
-            return new TFramework.TNet.OnReceive((aBuffer) => { ((Action<byte[]>)act)(aBuffer); });
-        });
-
-        rAppDomain.DelegateManager.RegisterDelegateConvertor<TFramework.TNet.OnException>((act) =>
-        {
-            return new TFramework.TNet.OnException((aException) => { ((Action<SocketException>)act)(aException); });
-        });
-
-        rAppDomain.DelegateManager.RegisterDelegateConvertor<TFramework.TNet.GetPacketSize>((act) =>
-        {
-            return new TFramework.TNet.GetPacketSize((aBuffer, aSize, aIndex) =>
-            {
-                return ((Func<byte[], int, int, int>)act)(aBuffer, aSize, aIndex);
-            });
-        });
-
-        rAppDomain.DelegateManager.RegisterMethodDelegate<byte[]>();
-        rAppDomain.DelegateManager.RegisterMethodDelegate<SocketException>();
-        rAppDomain.DelegateManager.RegisterFunctionDelegate<byte[], int, int, int>();
     }
 
     //注册适配器
@@ -89,6 +57,8 @@ public class LoadHotfixPlugin : TFSMStateBase
     {
         ILRuntime.Runtime.Enviorment.AppDomain rAppDomain = HotfixManager.GetSingleton().ILRuntimeApp;
 
+        rAppDomain.RegisterCrossBindingAdaptor(new ILRuntimeAdapter.CoroutineAdapter());
+        rAppDomain.RegisterCrossBindingAdaptor(new ILRuntimeAdapter.MonoBehaviourAdapter());
         rAppDomain.RegisterCrossBindingAdaptor(new ILRuntimeAdapter.TFSMStateBaseAdapter());
     }
 
@@ -101,6 +71,14 @@ public class LoadHotfixPlugin : TFSMStateBase
     //CLR绑定
     private void RegisterCLRBinding()
     {
-        //ILRuntime.Runtime.Generated.CLRBindings.Initialize(HotfixManager.GetSingleton().ILRuntimeApp);
+        ILRuntime.Runtime.Enviorment.AppDomain rAppDomain = HotfixManager.GetSingleton().ILRuntimeApp;
+
+        //绑定值类型
+        rAppDomain.RegisterValueTypeBinder(typeof(Vector2), new ILRuntimeTypeBinder.Vector2Binder());
+        rAppDomain.RegisterValueTypeBinder(typeof(Vector3), new ILRuntimeTypeBinder.Vector3Binder());
+        rAppDomain.RegisterValueTypeBinder(typeof(Quaternion), new ILRuntimeTypeBinder.QuaternionBinder());
+
+        //绑定接口
+        ILRuntime.Runtime.Generated.CLRBindings.Initialize(rAppDomain);
     }
 }

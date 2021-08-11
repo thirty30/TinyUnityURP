@@ -16,7 +16,6 @@ public class MainLoading : TFSMStateBase
         AssetLoader.LoadAB("loading_config");
 
         TUIManager.GetSingleton().Initialize();
-        NetworkManager.GetSingleton().Initialize();
 
         this.FSM.SetState(this.mState + 1);
     }
