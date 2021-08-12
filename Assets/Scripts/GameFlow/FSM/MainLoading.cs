@@ -14,15 +14,14 @@ public class MainLoading : TFSMStateBase
     public override void OnEnterState() 
     {
         AssetLoader.LoadAB("loading_config");
-
-        TUIManager.GetSingleton().Initialize();
-
-        this.FSM.SetState(this.mState + 1);
+        
+        TUIManager.GetSingleton().RegisterUI("UIMainLoading", "Assets/LoadingConfig/UIMainLoading.prefab");
+        TUIManager.GetSingleton().OpenUI("UIMainLoading");
     }
     
     public override void OnUpdateState() 
     {
-        
+        this.FSM.SetState(this.mState + 1);
     }
     
     public override void OnExitState() 

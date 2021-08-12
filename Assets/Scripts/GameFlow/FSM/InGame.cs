@@ -29,7 +29,6 @@ public class InGame : TFSMStateBase
     public override void OnUpdateState()
     {
         NetworkManager.GetSingleton().Update();
-        TUIManager.GetSingleton().Update();
 
         HotfixManager.GetSingleton().ILRuntimeApp.Invoke(this.mMethodUpdate, null, null);
     }

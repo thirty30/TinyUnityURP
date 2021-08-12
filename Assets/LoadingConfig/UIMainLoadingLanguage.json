@@ -1,0 +1,14 @@
+{
+	"chinese":
+	[
+		"加载中...",
+		"校验资源中...",
+		"更新资源中..."
+	],
+	"english":
+	[
+		"Loading...",
+		"Verifying Assets...",
+		"Updating Assets..."
+	]
+}

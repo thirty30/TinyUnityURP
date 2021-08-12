@@ -109,6 +109,11 @@ namespace TFramework
         {
             string strPath = Path.Combine(Application.streamingAssetsPath, ABFolderName, aAssetBundleName);
             AssetBundle ab = AssetBundle.LoadFromFile(strPath);
+            if (ab == null)
+            {
+                Debug.LogError("Failed to load the AssetBundle: " + strPath);
+                return null;
+            }
             ABList.Add(ab);
             return ab;
         }

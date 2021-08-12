@@ -44,7 +44,6 @@ namespace HotfixGameplay.GUI
 
         private void OnBtnConnect()
         {
-            this.TextTest.text = "Connecting server...";
             bool bConnected = NetworkManager.GetSingleton().ConnectServer("127.0.0.1", 18610);
             if (bConnected == true)
             {

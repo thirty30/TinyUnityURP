@@ -4,9 +4,12 @@ using UnityEngine;
 using TFramework;
 using System;
 using System.Net.Sockets;
+using TFramework.TGUI;
 
 public class LoadHotfixPlugin : TFSMStateBase
 {
+    private UIMainLoading mUI;
+
     public LoadHotfixPlugin(int aState) : base(aState)
     {
 
@@ -14,6 +17,9 @@ public class LoadHotfixPlugin : TFSMStateBase
 
     public override void OnEnterState() 
     {
+        this.mUI = TUIManager.GetSingleton().GetUIObject("UIMainLoading") as UIMainLoading;
+        this.mUI.SetProgress(0, 0);
+
         HotfixManager.GetSingleton().RegisterDelegate += this.RegisterDelegate;
         HotfixManager.GetSingleton().RegisterAdapter += this.RegisterAdapter;
         HotfixManager.GetSingleton().RegisterCLRRedirection += this.RegisterCLRRedirection;
@@ -36,7 +42,10 @@ public class LoadHotfixPlugin : TFSMStateBase
     private IEnumerator InitHotfixGameplay()
     {
         yield return HotfixManager.GetSingleton().InitILRuntime("HotfixGameplay");
+
         //yield return new WaitForSeconds(3.0f);
+
+        this.mUI.SetProgress(0, 100);
         //加载完切到下一个状态
         this.FSM.SetState(this.mState + 1);
     }

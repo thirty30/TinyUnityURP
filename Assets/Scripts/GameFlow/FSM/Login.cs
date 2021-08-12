@@ -19,6 +19,9 @@ public class Login : TFSMStateBase
 
     public override void OnEnterState()
     {
+        UIMainLoading rUI = TUIManager.GetSingleton().GetUIObject("UIMainLoading") as UIMainLoading;
+        rUI.HideProgress();
+
         NetworkManager.GetSingleton().Initialize();
 
         ILRuntime.Runtime.Enviorment.AppDomain rAppDomain = HotfixManager.GetSingleton().ILRuntimeApp;
@@ -32,7 +35,6 @@ public class Login : TFSMStateBase
     public override void OnUpdateState()
     {
         NetworkManager.GetSingleton().Update();
-        TUIManager.GetSingleton().Update();
 
         HotfixManager.GetSingleton().ILRuntimeApp.Invoke(this.mMethodUpdate, null, null);
 

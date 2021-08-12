@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TFramework;
+using TFramework.TGUI;
 
 public class Main : MBSingleton<Main>
 {
@@ -9,10 +10,11 @@ public class Main : MBSingleton<Main>
     private void Start()
     {
         AssetLoader.Init(EAssetLoadType.ASSET_BUNDLE);
+        TUIManager.GetSingleton().Initialize();
 
         this.mGameFlowFSM = new TFSM();
         this.mGameFlowFSM.RegisterState(new MainLoading(1));
-        this.mGameFlowFSM.RegisterState(new AssetVerify(2));
+        this.mGameFlowFSM.RegisterState(new VerifyAsset(2));
         this.mGameFlowFSM.RegisterState(new LoadHotfixPlugin(3));
         this.mGameFlowFSM.RegisterState(new Login(4));
         this.mGameFlowFSM.RegisterState(new InGame(5));
@@ -24,6 +26,7 @@ public class Main : MBSingleton<Main>
     private void Update()
     {
         this.mGameFlowFSM.Update();
+        TUIManager.GetSingleton().Update();
     }
 
     private void OnDestroy()

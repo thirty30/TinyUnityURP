@@ -180,6 +180,14 @@ namespace TFramework.TGUI
                 }
             }
 
+            foreach (TUIBasePage uiPage in this.mReadyToAddList)
+            {
+                if (uiPage.UIName == aUIName)
+                {
+                    return uiPage;
+                }
+            }
+
             return null;
         }
     }
