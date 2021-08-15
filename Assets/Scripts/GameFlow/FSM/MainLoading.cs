@@ -13,9 +13,9 @@ public class MainLoading : TFSMStateBase
 
     public override void OnEnterState() 
     {
-        AssetLoader.LoadAB("loading_config");
+        AssetLoader.LoadAB("main_loading");
         
-        TUIManager.GetSingleton().RegisterUI("UIMainLoading", "Assets/LoadingConfig/UIMainLoading.prefab");
+        TUIManager.GetSingleton().RegisterUI("UIMainLoading", "Assets/MainLoading/UIMainLoading.prefab");
         TUIManager.GetSingleton().OpenUI("UIMainLoading");
     }
     

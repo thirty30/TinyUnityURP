@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 
 namespace TFramework
@@ -107,6 +109,15 @@ namespace TFramework
 
         public static AssetBundle LoadAB(string aAssetBundleName)
         {
+            //MD5 md5 = new MD5CryptoServiceProvider();
+            //byte[] strBytes = Encoding.UTF8.GetBytes(aAssetBundleName);
+            //byte[] retVal = md5.ComputeHash(strBytes);
+            //StringBuilder sb = new StringBuilder();
+            //for (int i = 0; i < retVal.Length; i++)
+            //{
+            //    sb.Append(retVal[i].ToString("x2"));
+            //}
+
             string strPath = Path.Combine(Application.streamingAssetsPath, ABFolderName, aAssetBundleName);
             AssetBundle ab = AssetBundle.LoadFromFile(strPath);
             if (ab == null)
