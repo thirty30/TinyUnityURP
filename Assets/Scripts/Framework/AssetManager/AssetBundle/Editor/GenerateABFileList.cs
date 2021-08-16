@@ -1,3 +1,4 @@
+using LitJson;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -15,10 +16,9 @@ namespace TFramework
 
     public class GenerateABFileList : EditorWindow
     {
-        private string mTargetPath = Application.streamingAssetsPath;
         private string mOutputPath = "D:/ToolDownload/nginx-1.16.1/html/version";
 
-        [MenuItem("AssetsBundle/Generate AB File List")]
+        [MenuItem("TTool/Generate AB File List")]
         public static void Init()
         {
             GenerateABFileList window = GetWindow<GenerateABFileList>();
@@ -28,13 +28,12 @@ namespace TFramework
 
         private void OnGUI()
         {
-            this.mTargetPath = EditorGUILayout.TextField("Target Path:", this.mTargetPath);
             this.mOutputPath = EditorGUILayout.TextField("Output Path:", this.mOutputPath);
 
             GUILayout.Space(10.0f);
             if (GUILayout.Button("Generate") == true)
             {
-                GenerateMD5File(this.mTargetPath, this.mOutputPath);
+                GenerateMD5File(this.mOutputPath);
             }
 
             //GUILayout.Space(10.0f);
@@ -44,22 +43,28 @@ namespace TFramework
             //}
         }
 
-        public static void GenerateMD5File(string aTargetPath, string aOutputPath)
+        public static void GenerateMD5File(string aOutputPath)
         {
-            //Object rJson = AssetDatabase.LoadAssetAtPath<Object>("Assets/LoadingConfig/Version.json");
-            //LitJson.JsonData rJsonData = LitJson.JsonMapper.ToObject(rJson.ToString());
-            //string strVersion = rJsonData["Version"].ToString();
-
-            HotfixConfig rHotfixConfig = AssetDatabase.LoadAssetAtPath<HotfixConfig>("Assets/HotfixConfig.asset");
-            string strVersion = rHotfixConfig.Version;
+            StreamReader reader = new StreamReader(Path.Combine(Application.streamingAssetsPath, "_version.json"));
+            JsonData rJD = JsonMapper.ToObject(reader.ReadToEnd());
+            reader.Close();
+            string strVersion = rJD["version"].ToString();
             string strCDNPath = Path.Combine(aOutputPath, strVersion);
             if (Directory.Exists(strCDNPath) == false) {  Directory.CreateDirectory(strCDNPath); }
 
-            if (Directory.Exists(aTargetPath) == false) { return; }
-            List<ABFileInfo> rFileList = new List<ABFileInfo>();
-            GetFiles(aTargetPath, rFileList);
+            string strTargetPath = Application.streamingAssetsPath;
+            if (Directory.Exists(strTargetPath) == false) 
+            {
+                Debug.LogError("Can't find target folder!");
+                return; 
+            }
 
-            string strFileList = Path.Combine(strCDNPath, "FileList");
+            string strFileList = Path.Combine(Application.streamingAssetsPath, "_file_list");
+            File.Delete(strFileList);
+
+            List<ABFileInfo> rFileList = new List<ABFileInfo>();
+            GetFiles(strTargetPath, rFileList);
+
             FileStream fs = new FileStream(strFileList, FileMode.Create, FileAccess.Write);
             StreamWriter sw = new StreamWriter(fs);
 
@@ -78,9 +83,10 @@ namespace TFramework
 
                 File.Copy(info.FilePath, Path.Combine(strCDNPath, info.FileName), true);
             }
-
             sw.Flush();
             sw.Close();
+
+            File.Copy(strFileList, Path.Combine(strCDNPath, "_file_list"), true);
         }
 
         public static void GetFiles(string aPtah, List<ABFileInfo> aFileList)

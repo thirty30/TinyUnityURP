@@ -6,6 +6,24 @@ namespace TFramework
 {
     public class CreateAssetBundle : Editor
     {
+        [MenuItem("TTool/Build AssetBundle")]
+        static void BuildAssetBundle()
+        {
+            string strPath = Application.streamingAssetsPath;
+            if (Directory.Exists(strPath) == false) { Directory.CreateDirectory(strPath); }
+
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            BuildPipeline.BuildAssetBundles(strPath, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.StandaloneWindows64);
+#elif UNITY_EDITOR_OSX
+            BuildPipeline.BuildAssetBundles(strPath, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.StandaloneOSX);
+#elif UNITY_ANDROID
+            BuildPipeline.BuildAssetBundles(strPath, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.Android);
+#elif UNITY_IOS
+            BuildPipeline.BuildAssetBundles(strPath, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.iOS);
+#endif
+        }
+
+        /*
         [MenuItem("AssetsBundle/Build For Windows")]
         static void Build4Windows()
         {
@@ -37,5 +55,7 @@ namespace TFramework
             if (Directory.Exists(strPath) == false) { Directory.CreateDirectory(strPath); }
             BuildPipeline.BuildAssetBundles(strPath, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.iOS);
         }
+        */
+
     }
 }

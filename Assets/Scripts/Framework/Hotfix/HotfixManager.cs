@@ -22,15 +22,15 @@ namespace TFramework
         {
             //首先加载热更新dll
             this.ILRuntimeApp = new ILRuntime.Runtime.Enviorment.AppDomain();
-            string strDllName = "/Hotfix/" + aLibName + ".dll";
-            string strPdbName = "/Hotfix/" + aLibName + ".pdb";
+            
+            string strDllName = Path.Combine(Application.streamingAssetsPath, aLibName + ".dll");
 
 #if UNITY_ANDROID
-            UnityWebRequest dllReq = new UnityWebRequest(Application.streamingAssetsPath + strDllName);
+            UnityWebRequest dllReq = new UnityWebRequest(strDllName);
 #elif UNITY_IOS
-            UnityWebRequest dllReq = new UnityWebRequest(Application.streamingAssetsPath + strDllName);
+            UnityWebRequest dllReq = new UnityWebRequest(strDllName);
 #else
-            UnityWebRequest dllReq = new UnityWebRequest("file:///" + Application.streamingAssetsPath + strDllName);
+            UnityWebRequest dllReq = new UnityWebRequest("file:///" + strDllName);
 #endif
             dllReq.downloadHandler = new DownloadHandlerBuffer();
             yield return dllReq.SendWebRequest();
@@ -44,14 +44,14 @@ namespace TFramework
             dllReq.Dispose();
 
 #if DEBUG
-
+            string strPdbName = Path.Combine(Application.streamingAssetsPath, aLibName + ".pdb");
             //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-            UnityWebRequest pdbReq = new UnityWebRequest(Application.streamingAssetsPath + strPdbName);
+            UnityWebRequest pdbReq = new UnityWebRequest(strPdbName);
 #elif UNITY_IOS
-            UnityWebRequest pdbReq = new UnityWebRequest(Application.streamingAssetsPath + strPdbName);
+            UnityWebRequest pdbReq = new UnityWebRequest(strPdbName);
 #else
-            UnityWebRequest pdbReq = new UnityWebRequest("file:///" + Application.streamingAssetsPath + strPdbName);
+            UnityWebRequest pdbReq = new UnityWebRequest("file:///" + strPdbName);
 #endif
             pdbReq.downloadHandler = new DownloadHandlerBuffer();
             yield return pdbReq.SendWebRequest();

@@ -24,6 +24,8 @@ namespace TFramework
         public static void Init(EAssetLoadType aType)
         {
             LoadType = aType;
+
+            /*
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             ABFolderName = "Windows";
 #elif UNITY_EDITOR_OSX
@@ -33,6 +35,7 @@ namespace TFramework
 #elif UNITY_IOS
         ABFolderName = "IOS";
 #endif
+            */
         }
 
         public static Object Load(string aFile)
@@ -118,7 +121,8 @@ namespace TFramework
             //    sb.Append(retVal[i].ToString("x2"));
             //}
 
-            string strPath = Path.Combine(Application.streamingAssetsPath, ABFolderName, aAssetBundleName);
+            //string strPath = Path.Combine(Application.streamingAssetsPath, ABFolderName, aAssetBundleName);
+            string strPath = Path.Combine(Application.streamingAssetsPath, aAssetBundleName);
             AssetBundle ab = AssetBundle.LoadFromFile(strPath);
             if (ab == null)
             {
