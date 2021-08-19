@@ -18,7 +18,7 @@ namespace TFramework
     {
         private string mOutputPath = "D:/ToolDownload/nginx-1.16.1/html/version";
 
-        [MenuItem("TTool/Generate AB File List")]
+        [MenuItem("TTool/Generate AB File List", priority = 100)]
         public static void Init()
         {
             GenerateABFileList window = GetWindow<GenerateABFileList>();
@@ -87,6 +87,7 @@ namespace TFramework
             sw.Close();
 
             File.Copy(strFileList, Path.Combine(strCDNPath, "_file_list"), true);
+            Debug.Log("Generate AB file list successfully!");
         }
 
         public static void GetFiles(string aPtah, List<ABFileInfo> aFileList)

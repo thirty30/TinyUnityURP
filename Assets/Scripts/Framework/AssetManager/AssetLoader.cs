@@ -121,9 +121,26 @@ namespace TFramework
             //    sb.Append(retVal[i].ToString("x2"));
             //}
 
-            //string strPath = Path.Combine(Application.streamingAssetsPath, ABFolderName, aAssetBundleName);
-            string strPath = Path.Combine(Application.streamingAssetsPath, aAssetBundleName);
-            AssetBundle ab = AssetBundle.LoadFromFile(strPath);
+            string strPath = "";
+            AssetBundle ab = null;
+            //判断PersistentDataPath里面有没有文件
+            strPath = Path.Combine(Application.persistentDataPath, aAssetBundleName);
+            if (File.Exists(strPath) == true)
+            {
+                ab = AssetBundle.LoadFromFile(strPath);
+                if (ab == null)
+                {
+                    Debug.LogError("Failed to load the AssetBundle: " + strPath);
+                    return null;
+                }
+                ABList.Add(ab);
+                return ab;
+            }
+
+
+            //如果PersistentDataPath里面没有文件，那么就从StreamingAssetsPath加载
+            strPath = Path.Combine(Application.streamingAssetsPath, aAssetBundleName);
+            ab = AssetBundle.LoadFromFile(strPath);
             if (ab == null)
             {
                 Debug.LogError("Failed to load the AssetBundle: " + strPath);

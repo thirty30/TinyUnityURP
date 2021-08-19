@@ -33,7 +33,14 @@ public class VerifyAsset : TFSMStateBase
 
     public override void OnEnterState()
     {
-        StreamReader reader = new StreamReader(Path.Combine(Application.streamingAssetsPath, "_version.json"));
+        string strVersionFile = Path.Combine(Application.persistentDataPath, "_version.json");
+        //判断文件是否存在
+        if (File.Exists(strVersionFile) == false)
+        {
+            strVersionFile = Path.Combine(Application.streamingAssetsPath, "_version.json");
+        }
+
+        StreamReader reader = new StreamReader(strVersionFile);
         JsonData rJD= JsonMapper.ToObject(reader.ReadToEnd());
         reader.Close();
         this.mCurVersion = rJD["version"].ToString();
@@ -90,6 +97,7 @@ public class VerifyAsset : TFSMStateBase
     {
         this.mUI.SetProgress(1, 0);
 
+        //获取版本列表
         UnityWebRequest req = UnityWebRequest.Get(Path.Combine(this.mCDN, "version_list"));
         req.timeout = 10;
         yield return req.SendWebRequest();
@@ -114,6 +122,7 @@ public class VerifyAsset : TFSMStateBase
         }
         sr.Close();
 
+        //对比版本是否需要更新
         this.mLastestVersion = rVersionList[rVersionList.Count - 1];
         if (this.mLastestVersion == this.mCurVersion)
         {
@@ -136,8 +145,15 @@ public class VerifyAsset : TFSMStateBase
     {
         this.mUI.SetProgress(2, 0);
 
+        string strListFile = Path.Combine(Application.persistentDataPath, "_file_list");
+        //判断文件是否存在
+        if (File.Exists(strListFile) == false)
+        {
+            strListFile = Path.Combine(Application.streamingAssetsPath, "_file_list");
+        }
+
         //加载当前版本的文件列表信息 md5
-        StreamReader reader = new StreamReader(Path.Combine(Application.streamingAssetsPath, "_file_list"));
+        StreamReader reader = new StreamReader(strListFile);
         List<string> rCurFileList = new List<string>();
         while (reader.EndOfStream == false)
         {
@@ -199,19 +215,34 @@ public class VerifyAsset : TFSMStateBase
         foreach (string file in rToUpdate)
         {
             string strFileName = file.Split(':')[0];
+            //if (strFileName.Contains("main_loading") == true || strFileName.Contains("StreamingAssets") == true)
+            //{
+            //    continue;
+            //}
             //string strMD5 = file.Split(':')[1];
 
             UnityWebRequest reqUpdate = UnityWebRequest.Get(Path.Combine(this.mCDN, this.mLastestVersion, strFileName));
             reqUpdate.timeout = 10;
-            string strLocalPath = Path.Combine(Application.streamingAssetsPath, strFileName);
+            string strLocalPath = Path.Combine(Application.persistentDataPath, strFileName);
             reqUpdate.downloadHandler = new DownloadHandlerFile(strLocalPath);
             yield return reqUpdate.SendWebRequest();
-
+            
             if (string.IsNullOrEmpty(reqUpdate.error) == false)
             {
                 this.mVerifyState = EVerifyState.ERROR;
                 yield break;
             }
+
+            //UnityWebRequest reqUpdate = UnityWebRequestAssetBundle.GetAssetBundle(Path.Combine(this.mCDN, this.mLastestVersion, strFileName));
+            //reqUpdate.timeout = 10;
+            //yield return reqUpdate.SendWebRequest();
+            //
+            //if (reqUpdate.result != UnityWebRequest.Result.Success)
+            //{
+            //    this.mVerifyState = EVerifyState.ERROR;
+            //    yield break;
+            //}
+            //DownloadHandlerAssetBundle.GetContent(reqUpdate);
         }
 
         this.mVerifyState = EVerifyState.FINISH;

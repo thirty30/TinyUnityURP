@@ -34,7 +34,7 @@ namespace TFramework
 #endif
             dllReq.downloadHandler = new DownloadHandlerBuffer();
             yield return dllReq.SendWebRequest();
-            if (string.IsNullOrEmpty(dllReq.error) == false)
+            if (dllReq.result != UnityWebRequest.Result.Success)
             {
                 UnityEngine.Debug.LogError(dllReq.error);
                 yield break;
@@ -55,7 +55,7 @@ namespace TFramework
 #endif
             pdbReq.downloadHandler = new DownloadHandlerBuffer();
             yield return pdbReq.SendWebRequest();
-            if (string.IsNullOrEmpty(pdbReq.error) == false)
+            if (pdbReq.result != UnityWebRequest.Result.Success)
             {
                 UnityEngine.Debug.LogError(pdbReq.error);
                 yield break;

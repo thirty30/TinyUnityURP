@@ -6,7 +6,7 @@ namespace TFramework
 {
     public class CreateAssetBundle : Editor
     {
-        [MenuItem("TTool/Build AssetBundle")]
+        [MenuItem("TTool/Build AssetBundle", priority = 1)]
         static void BuildAssetBundle()
         {
             string strPath = Application.streamingAssetsPath;
