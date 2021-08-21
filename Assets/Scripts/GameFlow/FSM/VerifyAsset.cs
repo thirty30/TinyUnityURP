@@ -33,8 +33,11 @@ public class VerifyAsset : TFSMStateBase
 
     public override void OnEnterState()
     {
-        string strVersionFile = Path.Combine(Application.persistentDataPath, "_version.json");
+#if UNITY_EDITOR_WIN
+        //this.FSM.SetState(this.mState + 1);
+#endif
         //判断文件是否存在
+        string strVersionFile = Path.Combine(Application.persistentDataPath, "_version.json");
         if (File.Exists(strVersionFile) == false)
         {
             strVersionFile = Path.Combine(Application.streamingAssetsPath, "_version.json");

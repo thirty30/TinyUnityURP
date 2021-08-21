@@ -188,6 +188,23 @@ namespace TFramework
             return null;
         }
 
+        public static void ABUnload(string aABName)
+        {
+            AssetBundle temp = null;
+            foreach (AssetBundle ab in ABList)
+            {
+                if (ab.name == aABName)
+                {
+                    ab.Unload(true);
+                    break;
+                }
+            }
+            if (temp != null)
+            {
+                ABList.Remove(temp);
+            }
+        }
+
         public static void ABUnloadAssets(bool aUnloadAllLoadedAssets)
         {
             foreach (AssetBundle ab in ABList)

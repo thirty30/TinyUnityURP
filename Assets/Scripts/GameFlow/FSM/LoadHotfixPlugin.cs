@@ -5,6 +5,7 @@ using TFramework;
 using System;
 using System.Net.Sockets;
 using TFramework.TGUI;
+using System.IO;
 
 public class LoadHotfixPlugin : TFSMStateBase
 {
@@ -41,7 +42,14 @@ public class LoadHotfixPlugin : TFSMStateBase
 
     private IEnumerator InitHotfixGameplay()
     {
-        yield return HotfixManager.GetSingleton().InitILRuntime("HotfixGameplay");
+        //判断文件是否存在
+        string strLibFile = Path.Combine(Application.persistentDataPath, "HotfixGameplay.dll");
+        if (File.Exists(strLibFile) == false)
+        {
+            strLibFile = Path.Combine(Application.streamingAssetsPath, "HotfixGameplay.dll");
+        }
+
+        yield return HotfixManager.GetSingleton().InitILRuntime(strLibFile);
 
         //yield return new WaitForSeconds(3.0f);
 

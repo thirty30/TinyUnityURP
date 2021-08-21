@@ -18,19 +18,17 @@ namespace TFramework
         private System.IO.MemoryStream mDllStream;
         private System.IO.MemoryStream mPdbStream;
 
-        public IEnumerator InitILRuntime(string aLibName)
+        public IEnumerator InitILRuntime(string aLibPath)
         {
             //首先加载热更新dll
             this.ILRuntimeApp = new ILRuntime.Runtime.Enviorment.AppDomain();
-            
-            string strDllName = Path.Combine(Application.streamingAssetsPath, aLibName + ".dll");
 
 #if UNITY_ANDROID
             UnityWebRequest dllReq = new UnityWebRequest(strDllName);
 #elif UNITY_IOS
             UnityWebRequest dllReq = new UnityWebRequest(strDllName);
 #else
-            UnityWebRequest dllReq = new UnityWebRequest("file:///" + strDllName);
+            UnityWebRequest dllReq = new UnityWebRequest("file:///" + aLibPath);
 #endif
             dllReq.downloadHandler = new DownloadHandlerBuffer();
             yield return dllReq.SendWebRequest();
@@ -44,7 +42,7 @@ namespace TFramework
             dllReq.Dispose();
 
 #if DEBUG
-            string strPdbName = Path.Combine(Application.streamingAssetsPath, aLibName + ".pdb");
+            string strPdbName = aLibPath.Replace(".dll", ".pdb");
             //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
             UnityWebRequest pdbReq = new UnityWebRequest(strPdbName);
