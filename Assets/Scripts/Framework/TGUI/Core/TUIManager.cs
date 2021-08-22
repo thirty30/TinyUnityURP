@@ -37,6 +37,15 @@ namespace TFramework.TGUI
             return true;
         }
 
+        public void UnRegisterUI(string aKey)
+        {
+            if (this.mUIDic.ContainsKey(aKey) == false)
+            {
+                return;
+            }
+            this.mUIDic.Remove(aKey);
+        }
+
         public void Update()
         {
             foreach (TUIBasePage uiPage in this.mReadyToAddList)

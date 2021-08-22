@@ -40,6 +40,7 @@ namespace HotfixGameplay
         //预加载UI
         private static void PreloadUI()
         {
+            AssetLoader.LoadAB("ui/ui_main");
             TUIManager.GetSingleton().RegisterUI("UIMain", "Assets/UI/UIMain.prefab");
             
         }
