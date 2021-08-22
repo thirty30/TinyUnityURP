@@ -41,7 +41,7 @@ namespace TFramework
             byte[] dllData = dllReq.downloadHandler.data;
             dllReq.Dispose();
 
-#if DEBUG
+#if DEBUG_HOTFIX_CODE
             string strPdbName = aLibPath.Replace(".dll", ".pdb");
             //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID

@@ -17,7 +17,7 @@ public class UIMainLoading : TUIBasePage
     public override void OnInitialize(params object[] parms)
     {
         this.mCurLan = "english";
-        Object rLanFile = AssetLoader.ABLoad("Assets/MainLoading/UIMainLoadingLanguage.json");
+        Object rLanFile = AssetLoader.LoadAsset("Assets/MainLoading/UIMainLoadingLanguage.json");
         this.mJD = JsonMapper.ToObject(rLanFile.ToString());
 
 

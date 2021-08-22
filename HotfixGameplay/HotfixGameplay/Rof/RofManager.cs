@@ -52,7 +52,7 @@ namespace HotfixGameplay
 
         public void Initialize(string rConfigAssetPath)
         {
-            var rAssetsRequest = AssetLoader.LoadAll(rConfigAssetPath);
+            var rAssetsRequest = AssetLoader.LoadAllAssets(rConfigAssetPath);
             if (rAssetsRequest == null) return;
 
             Type rType = this.GetType();

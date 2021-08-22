@@ -53,7 +53,7 @@ public class LoadHotfixPlugin : TFSMStateBase
 
         //yield return new WaitForSeconds(3.0f);
 
-        this.mUI.SetProgress(0, 100);
+        this.mUI.SetProgress(0, 1.0f);
         //加载完切到下一个状态
         this.FSM.SetState(this.mState + 1);
     }

@@ -34,10 +34,10 @@ public class VerifyAsset : TFSMStateBase
 
     public override void OnEnterState()
     {
-#if UNITY_EDITOR_WIN
-        //this.FSM.SetState(this.mState + 1);
-        //return;
-#endif
+#if UNITY_EDITOR_WIN && DEV_ENVIRONMENT
+        this.FSM.SetState(this.mState + 1);
+        return;
+#else
 
         this.mCurVersion = PersistenceHelper.GetString("GameVersion");
         if (string.IsNullOrEmpty(this.mCurVersion) == true)
@@ -60,6 +60,7 @@ public class VerifyAsset : TFSMStateBase
 
         this.mUI = TUIManager.GetSingleton().GetUIObject("UIMainLoading") as UIMainLoading;
         Main.GetSingleton().DelegateCoroutine(this.DoVerifyAssetProcess());
+#endif
     }
 
 

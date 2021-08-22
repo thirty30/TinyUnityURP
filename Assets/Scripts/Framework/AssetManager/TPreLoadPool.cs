@@ -10,7 +10,7 @@ namespace TFramework
 
         public void LoadPrefabsToMemory(string a_strPath)
         {
-            Object[] objs = AssetLoader.ResourceLoadAll(a_strPath);
+            Object[] objs = AssetLoader.LoadAllAssets(a_strPath);
             for (int i = 0; i < objs.Length; i++)
             {
                 if (this.mDic.ContainsKey(objs[i].name))
@@ -24,7 +24,7 @@ namespace TFramework
 
         public void LoadPrefabToMemory(string a_strPath)
         {
-            Object obj = AssetLoader.ResourceLoad(a_strPath);
+            Object obj = AssetLoader.LoadAsset(a_strPath);
             if (obj == null)
             {
                 return;

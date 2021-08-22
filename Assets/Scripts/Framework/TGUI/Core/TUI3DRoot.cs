@@ -16,7 +16,7 @@ namespace TFramework.TGUI
 
         public GameObject AddChild(string assetPath)
         {
-            GameObject prefab = AssetLoader.Load<GameObject>(assetPath);
+            GameObject prefab = AssetLoader.LoadAsset<GameObject>(assetPath);
             GameObject ui = GameObject.Instantiate(prefab);
             this.AddChild(ui);
             return ui;

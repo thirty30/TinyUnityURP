@@ -13,7 +13,7 @@ public class ILRuntimeCLRBinding
     {
         //用新的分析热更dll调用引用来生成绑定代码
         AppDomain rAppDomain = new AppDomain();
-        using (FileStream fs = new FileStream("Assets/StreamingAssets/Hotfix/HotfixGameplay.dll", FileMode.Open, FileAccess.Read))
+        using (FileStream fs = new FileStream("Assets/StreamingAssets/HotfixGameplay.dll", FileMode.Open, FileAccess.Read))
         {
             rAppDomain.LoadAssembly(fs);
             InitILRuntime(rAppDomain);

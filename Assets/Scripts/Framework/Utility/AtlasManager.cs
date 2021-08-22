@@ -16,7 +16,7 @@ namespace TFramework
                 Debug.LogError("Load the same atlas!!");
                 return;
             }
-            SpriteAtlas atlas = AssetLoader.Load<SpriteAtlas>(aAtlasDir);
+            SpriteAtlas atlas = AssetLoader.LoadAsset<SpriteAtlas>(aAtlasDir);
             this.mDicAtlas.Add(aKey, atlas);
         }
 

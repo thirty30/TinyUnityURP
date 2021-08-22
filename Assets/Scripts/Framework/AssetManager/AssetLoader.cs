@@ -17,8 +17,14 @@ namespace TFramework
 
     public static class AssetLoader
     {
+        private class ABUnit
+        {
+            public AssetBundle AB;
+            public int RefCount;
+        }
+
         private static EAssetLoadType LoadType = EAssetLoadType.ASSET_BUNDLE;
-        private static List<AssetBundle> ABList = new List<AssetBundle>();
+        private static Dictionary<string, ABUnit> ABDic = new Dictionary<string, ABUnit>();
 
         public static void Init(EAssetLoadType aType)
         {
@@ -37,68 +43,74 @@ namespace TFramework
             */
         }
 
-        public static Object Load(string aFile)
+        public static Object LoadAsset(string aAssetPath)
         {
             if (LoadType == EAssetLoadType.RESOURCES)
             {
-                return ResourceLoad(aFile);
+                return ResourceLoadAsset(aAssetPath);
             }
             else if (LoadType == EAssetLoadType.ASSET_BUNDLE)
             {
-                return ABLoad(aFile);
+                return ABLoadAsset(aAssetPath);
             }
             return null;
         }
 
-        public static T Load<T>(string aFile) where T : Object
+        public static T LoadAsset<T>(string aAssetPath) where T : Object
         {
             if (LoadType == EAssetLoadType.RESOURCES)
             {
-                return ResourceLoad<T>(aFile);
+                return ResourceLoadAsset<T>(aAssetPath);
             }
             else if (LoadType == EAssetLoadType.ASSET_BUNDLE)
             {
-                return ABLoad<T>(aFile);
+                return ABLoadAsset<T>(aAssetPath);
             }
             return null;
         }
 
-        public static Object[] LoadAll(string aFile)
+        public static Object[] LoadAllAssets(string aAssetsPath)
         {
             if (LoadType == EAssetLoadType.RESOURCES)
             {
-                return ResourceLoadAll(aFile);
+                return ResourceLoadAllAssets(aAssetsPath);
             }
             else if (LoadType == EAssetLoadType.ASSET_BUNDLE)
             {
-                return ABLoadAll(aFile);
+                return ABLoadAllAssets(aAssetsPath);
             }
             return null;
         }
 
         ////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////
+        //Resource
 
-        public static T ResourceLoad<T>(string aFilePath) where T : Object
+        public static T ResourceLoadAsset<T>(string aFilePath) where T : Object
         {
             return Resources.Load<T>(aFilePath);
         }
 
-        public static Object ResourceLoad(string aFilePath)
+        public static Object ResourceLoadAsset(string aFilePath)
         {
             return Resources.Load(aFilePath);
         }
 
-        public static Object[] ResourceLoadAll(string aFolder)
+        public static Object[] ResourceLoadAllAssets(string aFolder)
         {
             return Resources.LoadAll(aFolder);
         }
 
-        public static IEnumerator AsyncResourceLoad(string aFilePath, AsyncLoadCallback aCallback)
+        public static IEnumerator AsyncResourceLoadAsset(string aFilePath, AsyncLoadCallback aCallback)
         {
             ResourceRequest req = Resources.LoadAsync(aFilePath);
             yield return req.isDone;
             if (aCallback != null) { aCallback(req.asset); };
+        }
+
+        public static void ResourceUnloadAsset(Object aObj)
+        {
+            Resources.UnloadAsset(aObj);
         }
 
         public static void ResourceUnloadAssets()
@@ -108,8 +120,18 @@ namespace TFramework
 
         ////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////
+        //AssetBundle
 
-        public static AssetBundle LoadAB(string aAssetBundleName)
+        private static ABUnit FindABUnit(string aABPath)
+        {
+            if (ABDic.ContainsKey(aABPath) == true)
+            {
+                return ABDic[aABPath];
+            }
+            return null;
+        }
+
+        public static AssetBundle LoadAB(string aABPath)
         {
             //MD5 md5 = new MD5CryptoServiceProvider();
             //byte[] strBytes = Encoding.UTF8.GetBytes(aAssetBundleName);
@@ -120,10 +142,18 @@ namespace TFramework
             //    sb.Append(retVal[i].ToString("x2"));
             //}
 
+            //如果已经加载，就只增加引用计数
+            ABUnit unit = FindABUnit(aABPath);
+            if (unit != null)
+            {
+                unit.RefCount++;
+                return unit.AB;
+            }
+
             string strPath = "";
             AssetBundle ab = null;
             //判断PersistentDataPath里面有没有文件
-            strPath = Path.Combine(Application.persistentDataPath, aAssetBundleName);
+            strPath = Path.Combine(Application.persistentDataPath, aABPath);
             if (File.Exists(strPath) == true)
             {
                 ab = AssetBundle.LoadFromFile(strPath);
@@ -132,56 +162,59 @@ namespace TFramework
                     Debug.LogError("Failed to load the AssetBundle: " + strPath);
                     return null;
                 }
-                ABList.Add(ab);
-                return ab;
             }
-
-
-            //如果PersistentDataPath里面没有文件，那么就从StreamingAssetsPath加载
-            strPath = Path.Combine(Application.streamingAssetsPath, aAssetBundleName);
-            ab = AssetBundle.LoadFromFile(strPath);
-            if (ab == null)
+            else
             {
-                Debug.LogError("Failed to load the AssetBundle: " + strPath);
-                return null;
+                //如果PersistentDataPath里面没有文件，那么就从StreamingAssetsPath加载
+                strPath = Path.Combine(Application.streamingAssetsPath, aABPath);
+                ab = AssetBundle.LoadFromFile(strPath);
+                if (ab == null)
+                {
+                    Debug.LogError("Failed to load the AssetBundle: " + strPath);
+                    return null;
+                }
             }
-            ABList.Add(ab);
+
+            unit = new ABUnit();
+            unit.AB = ab;
+            unit.RefCount = 1;
+            ABDic.Add(aABPath, unit);
             return ab;
         }
 
-        public static T ABLoad<T>(string aFileName) where T : Object
+        public static T ABLoadAsset<T>(string aFileName) where T : Object
         {
-            foreach (AssetBundle ab in ABList)
+            foreach (var pair in ABDic)
             {
-                if (ab.Contains(aFileName) == false)
+                if (pair.Value.AB.Contains(aFileName) == false)
                 {
                     continue;
                 }
-                return ab.LoadAsset<T>(aFileName);
+                return pair.Value.AB.LoadAsset<T>(aFileName);
             }
             return null;
         }
 
-        public static Object ABLoad(string aFileName)
+        public static Object ABLoadAsset(string aFileName)
         {
-            foreach (AssetBundle ab in ABList)
+            foreach (var pair in ABDic)
             {
-                if (ab.Contains(aFileName) == false)
+                if (pair.Value.AB.Contains(aFileName) == false)
                 {
                     continue;
                 }
-                return ab.LoadAsset(aFileName);
+                return pair.Value.AB.LoadAsset(aFileName);
             }
             return null;
         }
 
-        public static Object[] ABLoadAll(string aABName)
+        public static Object[] ABLoadAllAssets(string aABName)
         {
-            foreach (AssetBundle ab in ABList)
+            foreach (var pair in ABDic)
             {
-                if (ab.name == aABName)
+                if (pair.Key == aABName)
                 {
-                    return ab.LoadAllAssets();
+                    return pair.Value.AB.LoadAllAssets();
                 }
             }
             return null;
@@ -189,29 +222,25 @@ namespace TFramework
 
         public static void ABUnload(string aABName)
         {
-            AssetBundle temp = null;
-            foreach (AssetBundle ab in ABList)
+            bool bRemove = false;
+            foreach (var pair in ABDic)
             {
-                if (ab.name == aABName)
+                if (pair.Key != aABName)
                 {
-                    ab.Unload(true);
-                    break;
+                    continue;
+                }
+                pair.Value.RefCount--;
+                if (pair.Value.RefCount <= 0)
+                {
+                    pair.Value.AB.Unload(true);
+                    bRemove = true;
                 }
             }
-            if (temp != null)
+            if (bRemove == true)
             {
-                ABList.Remove(temp);
+                ABDic.Remove(aABName);
             }
         }
-
-        public static void ABUnloadAssets(bool aUnloadAllLoadedAssets)
-        {
-            foreach (AssetBundle ab in ABList)
-            {
-                ab.Unload(aUnloadAllLoadedAssets);
-            }
-        }
-
     }
 }
 

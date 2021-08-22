@@ -29,7 +29,6 @@ namespace HotfixGameplay
         {
             //加载Assetbundle
             AssetLoader.LoadAB("rof_config");
-            AssetLoader.LoadAB("ui");
 
             //图集
             //AtlasManager.GetSingleton().LoadAtlas("AtlasLogic", "Assets/Atlas/AtlasTown.spriteatlas");

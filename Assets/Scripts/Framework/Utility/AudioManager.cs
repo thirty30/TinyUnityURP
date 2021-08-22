@@ -24,7 +24,7 @@ namespace TFramework
 
         public void Init(string aPath)
         {
-            Object[] audios = AssetLoader.LoadAll(aPath);
+            Object[] audios = AssetLoader.LoadAllAssets(aPath);
             foreach (var audio in audios)
             {
                 AudioClip ac = audio as AudioClip;

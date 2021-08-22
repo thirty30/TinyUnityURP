@@ -27,7 +27,7 @@ namespace TFramework.TGUI
                 return false;
             }
 
-            GameObject prefab = AssetLoader.Load<GameObject>(aDir);
+            GameObject prefab = AssetLoader.LoadAsset<GameObject>(aDir);
             if (prefab == null)
             {
                 Debug.LogError("Can't find the UI prefab!");
