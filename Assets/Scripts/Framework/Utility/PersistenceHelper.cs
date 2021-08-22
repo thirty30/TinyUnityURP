@@ -143,6 +143,14 @@ namespace TFramework
         {
             PlayerPrefs.Save();
         }
+        public static void ClearAll()
+        {
+            PlayerPrefs.DeleteAll();
+        }
+        public static void ClearKey(string aKey)
+        {
+            PlayerPrefs.DeleteKey(aKey);
+        }
 
         public static void SetInt(string aKey, int aValue)
         {

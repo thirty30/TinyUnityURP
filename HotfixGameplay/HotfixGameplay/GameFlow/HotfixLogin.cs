@@ -9,7 +9,7 @@ namespace HotfixGameplay
         {
             HotfixNetworkHandler.GetSingleton().InitMessageHandler();
 
-            AssetLoader.LoadAB("ui_login");
+            AssetLoader.LoadAB("ui/ui_login");
             TUIManager.GetSingleton().RegisterUI("UILogin", "Assets/UI/UILogin.prefab");
             TUIManager.GetSingleton().OpenUI("UILogin");
         }

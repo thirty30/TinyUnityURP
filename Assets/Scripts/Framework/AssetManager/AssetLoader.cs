@@ -18,7 +18,6 @@ namespace TFramework
     public static class AssetLoader
     {
         private static EAssetLoadType LoadType = EAssetLoadType.ASSET_BUNDLE;
-        private static string ABFolderName;
         private static List<AssetBundle> ABList = new List<AssetBundle>();
 
         public static void Init(EAssetLoadType aType)

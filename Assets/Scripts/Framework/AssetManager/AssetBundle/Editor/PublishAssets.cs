@@ -130,10 +130,7 @@ namespace TFramework
                 cfg.CDN = this.mCDN;
                 string strJson = JsonMapper.ToJson(cfg);
                 string strCfgPath = Path.Combine(strPath, this.mBasicConfigName);
-                FileStream fs = new FileStream(strCfgPath, FileMode.Create, FileAccess.Write);
-                StreamWriter sw = new StreamWriter(fs);
-                sw.Write(strJson);
-                sw.Close();
+                File.WriteAllText(strCfgPath, strJson);
             }
 
             //编译热更新代码
@@ -159,6 +156,10 @@ namespace TFramework
             Dictionary<string, string> rFileList = new Dictionary<string, string>();
             foreach (string info in rABFiles)
             {
+                if (info.EndsWith(".meta") == true)
+                {
+                    continue;
+                }
                 FileStream file = new FileStream(info, FileMode.Open);
                 MD5 md5 = new MD5CryptoServiceProvider();
                 byte[] retVal = md5.ComputeHash(file);
@@ -173,12 +174,12 @@ namespace TFramework
                 rFileList.Add(k, v);
             }
 
-            string strJson = JsonMapper.ToJson(rFileList);
-            FileStream fs = new FileStream(strFileListPath, FileMode.Create, FileAccess.Write);
-            StreamWriter sw = new StreamWriter(fs);
-            sw.Write(strJson);
-            sw.Flush();
-            sw.Close();
+            StringBuilder rJsonSB = new StringBuilder();
+            JsonWriter jw = new JsonWriter(rJsonSB);
+            jw.PrettyPrint = true;
+            JsonMapper.ToJson(rFileList, jw);
+            File.WriteAllText(strFileListPath, rJsonSB.ToString());
+
             Debug.Log("Generate AB FileList successfully!");
         }
 
@@ -193,7 +194,7 @@ namespace TFramework
             }
             foreach (DirectoryInfo d in dirs)
             {
-                GetFiles(d.FullName, aFileList);
+                GetFiles(aPath + "/" + d.Name, aFileList);
             }
         }
 
