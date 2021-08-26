@@ -43,18 +43,16 @@ public class LoadHotfixPlugin : TFSMStateBase
     private IEnumerator InitHotfixGameplay()
     {
         //判断文件是否存在
-        string strLibFile = Path.Combine(Application.persistentDataPath, "HotfixGameplay.dll");
+        string strLibFile = Path.Combine(Application.persistentDataPath, "AssetBundles/HotfixGameplay.dll");
         if (File.Exists(strLibFile) == false)
         {
-            strLibFile = Path.Combine(Application.streamingAssetsPath, "HotfixGameplay.dll");
+            strLibFile = Path.Combine(Application.streamingAssetsPath, "AssetBundles/HotfixGameplay.dll");
         }
 
         yield return HotfixManager.GetSingleton().InitILRuntime(strLibFile);
 
-        //yield return new WaitForSeconds(3.0f);
-
-        this.mUI.SetProgress(0, 1.0f);
         //加载完切到下一个状态
+        this.mUI.SetProgress(0, 1.0f);
         this.FSM.SetState(this.mState + 1);
     }
 

@@ -2,14 +2,21 @@ using System.Collections;
 using UnityEngine;
 using TFramework;
 using TFramework.TGUI;
+using System.IO;
 
 public class Main : MBSingleton<Main>
 {
+    [HideInInspector]
+    public string GameVersion;
+
     private TFSM mGameFlowFSM;
 
     private void Start()
     {
         AssetLoader.Init(EAssetLoadType.ASSET_BUNDLE);
+        AssetLoader.SetABFolder("AssetBundles");
+        //AssetLoader.SetABFolder("PublishAssets/Windows/1.0.0/AssetBundles");
+
         TUIManager.GetSingleton().Initialize();
 
         this.mGameFlowFSM = new TFSM();

@@ -25,22 +25,17 @@ namespace TFramework
 
         private static EAssetLoadType LoadType = EAssetLoadType.ASSET_BUNDLE;
         private static Dictionary<string, ABUnit> ABDic = new Dictionary<string, ABUnit>();
+        private static AssetBundleManifest ABManifest = null;
+        private static string ABFolderPath = "";
 
         public static void Init(EAssetLoadType aType)
         {
             LoadType = aType;
+        }
 
-            /*
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            ABFolderName = "Windows";
-#elif UNITY_EDITOR_OSX
-        ABFolderName = "MacOS";
-#elif UNITY_ANDROID
-        ABFolderName = "Android";
-#elif UNITY_IOS
-        ABFolderName = "IOS";
-#endif
-            */
+        public static void SetABFolder(string aFolderName)
+        {
+            ABFolderPath = aFolderName;
         }
 
         public static Object LoadAsset(string aAssetPath)
@@ -82,7 +77,7 @@ namespace TFramework
             return null;
         }
 
-        ////////////////////////////////////////////////////////////////////////////////
+        #region Load From Resource
         ////////////////////////////////////////////////////////////////////////////////
         //Resource
 
@@ -118,7 +113,9 @@ namespace TFramework
             Resources.UnloadUnusedAssets();
         }
 
-        ////////////////////////////////////////////////////////////////////////////////
+        #endregion
+
+        #region Load From AB
         ////////////////////////////////////////////////////////////////////////////////
         //AssetBundle
 
@@ -131,17 +128,21 @@ namespace TFramework
             return null;
         }
 
+        private static string Cover2MD5Name(string aAssetBundleName)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] strBytes = Encoding.UTF8.GetBytes(aAssetBundleName);
+            byte[] retVal = md5.ComputeHash(strBytes);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < retVal.Length; i++)
+            {
+                sb.Append(retVal[i].ToString("x2"));
+            }
+            return sb.ToString();
+        }
+
         public static AssetBundle LoadAB(string aABPath)
         {
-            //MD5 md5 = new MD5CryptoServiceProvider();
-            //byte[] strBytes = Encoding.UTF8.GetBytes(aAssetBundleName);
-            //byte[] retVal = md5.ComputeHash(strBytes);
-            //StringBuilder sb = new StringBuilder();
-            //for (int i = 0; i < retVal.Length; i++)
-            //{
-            //    sb.Append(retVal[i].ToString("x2"));
-            //}
-
             //如果已经加载，就只增加引用计数
             ABUnit unit = FindABUnit(aABPath);
             if (unit != null)
@@ -150,10 +151,20 @@ namespace TFramework
                 return unit.AB;
             }
 
+            //加载依赖项
+            if (ABManifest != null)
+            {
+                string[] dependencies = ABManifest.GetAllDependencies(aABPath);
+                foreach (string strAB in dependencies)
+                {
+                    LoadAB(strAB);
+                }
+            }
+
             string strPath = "";
             AssetBundle ab = null;
             //判断PersistentDataPath里面有没有文件
-            strPath = Path.Combine(Application.persistentDataPath, aABPath);
+            strPath = Path.Combine(Application.persistentDataPath, ABFolderPath, aABPath);
             if (File.Exists(strPath) == true)
             {
                 ab = AssetBundle.LoadFromFile(strPath);
@@ -166,7 +177,7 @@ namespace TFramework
             else
             {
                 //如果PersistentDataPath里面没有文件，那么就从StreamingAssetsPath加载
-                strPath = Path.Combine(Application.streamingAssetsPath, aABPath);
+                strPath = Path.Combine(Application.streamingAssetsPath, ABFolderPath, aABPath);
                 ab = AssetBundle.LoadFromFile(strPath);
                 if (ab == null)
                 {
@@ -179,7 +190,72 @@ namespace TFramework
             unit.AB = ab;
             unit.RefCount = 1;
             ABDic.Add(aABPath, unit);
+
             return ab;
+        }
+
+        public static void UnLoadAB(string aABPath)
+        {
+            if (ABManifest != null)
+            {
+                string[] dependencies = ABManifest.GetAllDependencies(aABPath);
+                foreach (string strAB in dependencies)
+                {
+                    UnLoadAB(strAB);
+                }
+            }
+
+            bool bRemove = false;
+            foreach (var pair in ABDic)
+            {
+                if (pair.Key != aABPath)
+                {
+                    continue;
+                }
+
+                pair.Value.RefCount--;
+                if (pair.Value.RefCount <= 0)
+                {
+                    pair.Value.AB.Unload(true);
+                    bRemove = true;
+                }
+                break;
+            }
+            if (bRemove == true)
+            {
+                ABDic.Remove(aABPath);
+            }
+        }
+
+        public static void LoadManifest(string aManifestName)
+        {
+            string strPath = Path.Combine(Application.persistentDataPath, ABFolderPath, aManifestName);
+            AssetBundle ab = null;
+            if (File.Exists(strPath) == true)
+            {
+                ab = AssetBundle.LoadFromFile(strPath);
+                if (ab == null)
+                {
+                    Debug.LogError("Failed to load the AssetBundle: " + strPath);
+                    return;
+                }
+            }
+            else
+            {
+                //如果PersistentDataPath里面没有文件，那么就从StreamingAssetsPath加载
+                strPath = Path.Combine(Application.streamingAssetsPath, ABFolderPath, aManifestName);
+                ab = AssetBundle.LoadFromFile(strPath);
+                if (ab == null)
+                {
+                    Debug.LogError("Failed to load the AssetBundle: " + strPath);
+                    return;
+                }
+            }
+            ABManifest = ab.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+            if (ABManifest == null)
+            {
+                Debug.LogError("Load AB Manifest fail!");
+            }
         }
 
         public static T ABLoadAsset<T>(string aFileName) where T : Object
@@ -220,27 +296,8 @@ namespace TFramework
             return null;
         }
 
-        public static void ABUnload(string aABName)
-        {
-            bool bRemove = false;
-            foreach (var pair in ABDic)
-            {
-                if (pair.Key != aABName)
-                {
-                    continue;
-                }
-                pair.Value.RefCount--;
-                if (pair.Value.RefCount <= 0)
-                {
-                    pair.Value.AB.Unload(true);
-                    bRemove = true;
-                }
-            }
-            if (bRemove == true)
-            {
-                ABDic.Remove(aABName);
-            }
-        }
+        #endregion
+
     }
 }
 

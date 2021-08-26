@@ -54,6 +54,7 @@ namespace ILRuntime.Runtime.Generated
             UnityEngine_GameObject_Binding.Register(app);
             UnityEngine_UI_Button_Binding.Register(app);
             UnityEngine_Events_UnityEvent_Binding.Register(app);
+            TMPro_TMP_Text_Binding.Register(app);
             System_Collections_Generic_Dictionary_2_Enum_List_1_ILTypeInstance_Binding.Register(app);
             System_Collections_Generic_List_1_ILTypeInstance_Binding_Enumerator_Binding.Register(app);
             System_IDisposable_Binding.Register(app);

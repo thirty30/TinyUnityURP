@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TFramework;
 using TFramework.TGUI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,11 +11,13 @@ namespace HotfixGameplay.GUI
     {
         private Button BtnTest;
         private TGUIText TextTest;
+        private TGUIText TextVersion;
 
         public void OnBindingComponent(object[] aComponents)
         {
             this.BtnTest = (aComponents[0] as GameObject).GetComponent<Button>();
             this.TextTest = (aComponents[1] as GameObject).GetComponent<TGUIText>();
+            this.TextVersion = (aComponents[2] as GameObject).GetComponent<TGUIText>();
         }
 
         public void OnInitialize(params object[] parms)
@@ -22,14 +25,14 @@ namespace HotfixGameplay.GUI
             this.BtnTest.onClick.AddListener(this.OnBtnConnect);
         }
 
+        public void OnShow()
+        {
+            this.TextVersion.text = "v" + Main.GetSingleton().GameVersion;
+        }
+
         public void OnUpdate()
         {
             
-        }
-
-        public void OnShow()
-        {
-
         }
 
         public void OnHide()

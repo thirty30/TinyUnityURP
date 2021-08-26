@@ -20,11 +20,17 @@ namespace ILRuntime.Runtime.Generated
         {
             BindingFlags flag = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
             MethodBase method;
+            FieldInfo field;
             Type[] args;
             Type type = typeof(global::Main);
             args = new Type[]{};
             method = type.GetMethod("EnterGame", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, EnterGame_0);
+
+            field = type.GetField("GameVersion", flag);
+            app.RegisterCLRFieldGetter(field, get_GameVersion_0);
+            app.RegisterCLRFieldSetter(field, set_GameVersion_0);
+            app.RegisterCLRFieldBinding(field, CopyToStack_GameVersion_0, AssignFromStack_GameVersion_0);
 
 
         }
@@ -43,6 +49,31 @@ namespace ILRuntime.Runtime.Generated
             instance_of_this_method.EnterGame();
 
             return __ret;
+        }
+
+
+        static object get_GameVersion_0(ref object o)
+        {
+            return ((global::Main)o).GameVersion;
+        }
+
+        static StackObject* CopyToStack_GameVersion_0(ref object o, ILIntepreter __intp, StackObject* __ret, IList<object> __mStack)
+        {
+            var result_of_this_method = ((global::Main)o).GameVersion;
+            return ILIntepreter.PushObject(__ret, __mStack, result_of_this_method);
+        }
+
+        static void set_GameVersion_0(ref object o, object v)
+        {
+            ((global::Main)o).GameVersion = (System.String)v;
+        }
+
+        static StackObject* AssignFromStack_GameVersion_0(ref object o, ILIntepreter __intp, StackObject* ptr_of_this_method, IList<object> __mStack)
+        {
+            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
+            System.String @GameVersion = (System.String)typeof(System.String).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
+            ((global::Main)o).GameVersion = @GameVersion;
+            return ptr_of_this_method;
         }
 
 

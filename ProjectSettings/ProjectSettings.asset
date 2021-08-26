@@ -589,7 +589,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    1: DEBUG
+    1: DEBUG_HOTFIX_CODE;DEV_ENVIRONMENT
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

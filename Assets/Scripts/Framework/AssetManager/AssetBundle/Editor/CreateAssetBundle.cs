@@ -9,7 +9,7 @@ namespace TFramework
         [MenuItem("TTool/Build AssetBundle", priority = 1)]
         static void BuildAssetBundle()
         {
-            string strPath = Application.streamingAssetsPath;
+            string strPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles");
             if (Directory.Exists(strPath) == false) { Directory.CreateDirectory(strPath); }
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN

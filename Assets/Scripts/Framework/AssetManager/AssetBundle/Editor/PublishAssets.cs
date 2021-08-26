@@ -76,46 +76,42 @@ namespace TFramework
             string strPath = "";
             if (this.mTargetPlatform == ETargetPlatform.WINDOWS)
             {
-                strPath = Path.Combine(this.mOutputPath, "Windows", this.mVersion);
+                strPath = Path.Combine(this.mOutputPath, "Windows", this.mVersion, "AssetBundles");
             }
             else if (this.mTargetPlatform == ETargetPlatform.MAC_OS)
             {
-                strPath = Path.Combine(this.mOutputPath, "MacOS", this.mVersion);
+                strPath = Path.Combine(this.mOutputPath, "MacOS", this.mVersion, "AssetBundles");
             }
             else if (this.mTargetPlatform == ETargetPlatform.ANDROID)
             {
-                strPath = Path.Combine(this.mOutputPath, "Android", this.mVersion);
+                strPath = Path.Combine(this.mOutputPath, "Android", this.mVersion, "AssetBundles");
             }
             else if (this.mTargetPlatform == ETargetPlatform.IOS)
             {
-                strPath = Path.Combine(this.mOutputPath, "IOS", this.mVersion);
+                strPath = Path.Combine(this.mOutputPath, "IOS", this.mVersion, "AssetBundles");
             }
             return strPath;
         }
 
         public void GenerateAssetBundle()
         {
-            string strPath = "";
+            string strPath = this.GetPublishPath();
             BuildTarget eTarget = BuildTarget.NoTarget;
 
             if (this.mTargetPlatform == ETargetPlatform.WINDOWS)
             {
-                strPath = Path.Combine(this.mOutputPath, "Windows", this.mVersion);
                 eTarget = BuildTarget.StandaloneWindows64;
             }
             else if (this.mTargetPlatform == ETargetPlatform.MAC_OS)
             {
-                strPath = Path.Combine(this.mOutputPath, "MacOS", this.mVersion);
                 eTarget = BuildTarget.StandaloneOSX;
             }
             else if (this.mTargetPlatform == ETargetPlatform.ANDROID)
             {
-                strPath = Path.Combine(this.mOutputPath, "Android", this.mVersion);
                 eTarget = BuildTarget.Android;
             }
             else if (this.mTargetPlatform == ETargetPlatform.IOS)
             {
-                strPath = Path.Combine(this.mOutputPath, "IOS", this.mVersion);
                 eTarget = BuildTarget.iOS;
             }
 

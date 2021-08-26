@@ -34,7 +34,7 @@ public class VerifyAsset : TFSMStateBase
 
     public override void OnEnterState()
     {
-#if UNITY_EDITOR_WIN && DEV_ENVIRONMENT
+#if UNITY_EDITOR && DEV_ENVIRONMENT
         this.FSM.SetState(this.mState + 1);
         return;
 #else
@@ -43,7 +43,7 @@ public class VerifyAsset : TFSMStateBase
         if (string.IsNullOrEmpty(this.mCurVersion) == true)
         {
             //第一次进游戏，版本号从配置文件读
-            string strVersionFile = Path.Combine(Application.streamingAssetsPath, "BasicConfig.json");
+            string strVersionFile = Path.Combine(Application.streamingAssetsPath, "AssetBundles/BasicConfig.json");
             string strJsonVersion = File.ReadAllText(strVersionFile);
             JsonData rBasicCfgJD = JsonMapper.ToObject(strJsonVersion);
             this.mCurVersion = rBasicCfgJD["Version"].ToString();
@@ -52,7 +52,7 @@ public class VerifyAsset : TFSMStateBase
         else
         {
             //进游戏后版本号从缓存里读
-            string strVersionFile = Path.Combine(Application.persistentDataPath, "BasicConfig.json");
+            string strVersionFile = Path.Combine(Application.persistentDataPath, "AssetBundles/BasicConfig.json");
             string strJsonVersion = File.ReadAllText(strVersionFile);
             JsonData rBasicCfgJD = JsonMapper.ToObject(strJsonVersion);
             this.mCDN = rBasicCfgJD["CDN"].ToString();
@@ -128,10 +128,10 @@ public class VerifyAsset : TFSMStateBase
             this.mVerifyState = EVerifyState.VERIFY_VERSION;
 
             //判断当前版本文件列表是否存在Persistent目录
-            string strFileListPath = Path.Combine(Application.persistentDataPath, "FileList.json");
+            string strFileListPath = Path.Combine(Application.persistentDataPath, "AssetBundles/FileList.json");
             if (File.Exists(strFileListPath) == false)
             {
-                strFileListPath = Path.Combine(Application.streamingAssetsPath, "FileList.json");
+                strFileListPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/FileList.json");
             }
 
             //加载当前版本的文件列表信息 md5
@@ -228,12 +228,12 @@ public class VerifyAsset : TFSMStateBase
             this.mVerifyState = EVerifyState.UPDATE_AB_FILE;
             this.mUI.SetProgress(2, 0);
 
-            int nCount = 0;
+            //int nCount = 0;
             foreach (string file in rToUpdate)
             {
                 this.mWebReq = UnityWebRequest.Get(Path.Combine(strAssetsURL, file));
                 this.mWebReq.timeout = 10;
-                string strLocalPath = Path.Combine(Application.persistentDataPath, file);
+                string strLocalPath = Path.Combine(Application.persistentDataPath, "AssetBundles", file);
                 this.mWebReq.downloadHandler = new DownloadHandlerFile(strLocalPath);
                 yield return this.mWebReq.SendWebRequest();
 
@@ -247,11 +247,11 @@ public class VerifyAsset : TFSMStateBase
                 PersistenceHelper.SetList<string>("HotfixDownloadedFiles", rDownloadedFiles);
                 PersistenceHelper.Save();
 
-                nCount++;
-                if (nCount > 3)
-                {
-                    yield break;
-                }
+                //nCount++;
+                //if (nCount > 3)
+                //{
+                //    yield break;
+                //}
             }
 
             PersistenceHelper.SetString("GameVersion", this.mLastestVersion);
@@ -300,6 +300,12 @@ public class VerifyAsset : TFSMStateBase
     public override void OnExitState()
     {
         this.mWebReq?.Dispose();
+
+        //赋值版本号
+        Main.GetSingleton().GameVersion = this.mLastestVersion;
+
+        //加载manifest文件，用来找AB依赖
+        AssetLoader.LoadManifest("AssetBundles");
     }
 
 }
