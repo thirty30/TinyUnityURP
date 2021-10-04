@@ -1,0 +1,2 @@
+1 0 1.50
+1 ANIMATION 0.00 attack Assets/Character/Animations/male@attack.fbx
