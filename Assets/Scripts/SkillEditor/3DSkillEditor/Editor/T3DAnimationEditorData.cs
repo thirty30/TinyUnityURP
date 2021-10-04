@@ -19,6 +19,7 @@ namespace SkillEditor
         private Label mCurAnimationTimeLabel = null;    //动作当前时间
 
         public override SkillEventType GetEventType() { return SkillEventType.ANIMATION; }
+        public override Color GetDisplayColor() { return Color.green; }
 
         public override void Init()
         {

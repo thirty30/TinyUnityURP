@@ -59,6 +59,10 @@ namespace SkillEditor
 
         public void OnDestroy()
         {
+            foreach (var child in this.mEventsScrollView.Children())
+            {
+                (child.userData as T3DSkillEditorDataBase).Clear();
+            }
             AnimationMode.StopAnimationMode();  
         }
 
@@ -186,6 +190,27 @@ namespace SkillEditor
             return fSkillTime;
         }
 
+        //计算技能真实时长
+        private float CalcRealSkillTime()
+        {
+            //其他事件开始时间不能超过动作结束时间，最后一个动作结束时间是技能时长
+            float fSkillTime = 0;
+            foreach (var child in this.mEventsScrollView.Children())
+            {
+                T3DSkillEditorDataBase data = child.userData as T3DSkillEditorDataBase;
+                if (data.GetEventType() != SkillEventType.ANIMATION)
+                {
+                    continue;
+                }
+                float fTime = data.StartTime + data.GetDuration();
+                if (fTime > fSkillTime)
+                {
+                    fSkillTime = fTime;
+                }
+            }
+            return fSkillTime;
+        }
+
         private void OnClickPreviewSkill()
         {
             if (this.mIsPreviewing == true)
@@ -249,12 +274,7 @@ namespace SkillEditor
             rEventItem.Add(rColorMark);
             rColorMark.style.width = 3;
             rColorMark.style.height = Length.Percent(100);
-
-            if (aEventType == SkillEventType.ANIMATION) { rColorMark.style.backgroundColor = Color.green; }
-            else if (aEventType == SkillEventType.CREATE_VFX) { rColorMark.style.backgroundColor = Color.yellow; }
-            else if (aEventType == SkillEventType.ATTACH_VFX) { rColorMark.style.backgroundColor = new Color(1, 0.6f, 0.2f, 1); }
-            else if (aEventType == SkillEventType.HIT) { rColorMark.style.backgroundColor = Color.red; }
-            else if (aEventType == SkillEventType.SUMMON) { rColorMark.style.backgroundColor = Color.blue; }
+            rColorMark.style.backgroundColor = rEditorData.GetDisplayColor();
 
             TextField rEventNameTextField = new TextField();
             rEventItem.Add(rEventNameTextField);
@@ -398,6 +418,7 @@ namespace SkillEditor
             this.mPropertyPanel.Add(rSkillData.GetRootPanel());
         }
 
+        //新建技能文件
         private void OnClickCreateNewSkill()
         {
             string strPath = EditorUtility.SaveFilePanel("Select Path", "", "SkillData", "txt");
@@ -414,6 +435,7 @@ namespace SkillEditor
             this.mSkillDataObjField.value = rSkillData;
         }
 
+        //更换技能文件
         private void OnSkillDataChanged(ChangeEvent<Object> aEvt)
         {
             foreach (var child in this.mEventsScrollView.Children())
@@ -464,25 +486,71 @@ namespace SkillEditor
             fs.Close();
         }
 
+        //保存文件
         private void OnClickSaveSkill()
         {
             TextAsset rSkillData = this.mSkillDataObjField.value as TextAsset;
             if (rSkillData == null)
             {
-                EditorUtility.DisplayDialog("Error", "Can't find the skill data file!", "OK");
+                this.SaveAs();  //如果没有创建文件就直接编辑
+                //EditorUtility.DisplayDialog("Error", "Can't find the skill data file!", "OK");
                 return;
             }
 
             string strPath = Application.dataPath.Replace("Assets", "") + AssetDatabase.GetAssetPath(rSkillData);
             FileStream fs = new FileStream(strPath, FileMode.Open, FileAccess.Write);
             StreamWriter sw = new StreamWriter(fs);
+            string strContent = this.FormatSaveContent();
+            if (strContent == null)
+            {
+                fs.Close();
+                return;
+            }
+
+            sw.Write(strContent);
+            sw.Flush();
+            fs.Close();
+
+            EditorUtility.DisplayDialog("Tip", "Saved", "OK");
+        }
+
+        //如果没有创建文件就直接编辑，重新创建一个文件然后存储
+        private void SaveAs()
+        {
+            string strPath = EditorUtility.SaveFilePanel("Select Path", "", "SkillData", "txt");
+            if (strPath == string.Empty)
+            {
+                return;
+            }
+
+            FileStream fs = new FileStream(strPath, FileMode.Create, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs);
+            string strContent = this.FormatSaveContent();
+            if (strContent == null)
+            {
+                fs.Close();
+                return;
+            }
+
+            sw.Write(strContent);
+            sw.Flush();
+            fs.Close();
+
+            strPath = strPath.Replace(Application.dataPath, "Assets");
+            AssetDatabase.Refresh();
+            TextAsset rSkillData = AssetDatabase.LoadAssetAtPath<TextAsset>(strPath);
+            this.mSkillDataObjField.value = rSkillData;
+        }
+
+        private string FormatSaveContent()
+        {
             System.Text.StringBuilder sbText = new System.Text.StringBuilder();
 
             float fSkillTime = this.CalcRealSkillTime();
 
             //0       1         2
             //SkillID SkillType SKillTime
-            string strSkillInfo = string.Format("{0} {1} {2:N2}", 
+            string strSkillInfo = string.Format("{0} {1} {2:N2}",
                 this.mSkillIDTextField.value,
                 (int)(SKillType)this.mSkillTypeField.value,
                 fSkillTime);
@@ -495,38 +563,12 @@ namespace SkillEditor
                 string strContent = data.SaveToFile();
                 if (strContent == string.Empty)
                 {
-                    fs.Close();
-                    return;
+                    return null;
                 }
                 sbText.AppendLine(strContent);
             }
 
-            sw.Write(sbText.ToString());
-            sw.Flush();
-            fs.Close();
-
-            EditorUtility.DisplayDialog("Tip", "Saved", "OK");
-        }
-
-        //计算技能时长
-        private float CalcRealSkillTime()
-        {
-            //其他事件开始时间不能超过动作结束时间，最后一个动作结束时间是技能时长
-            float fSkillTime = 0;
-            foreach (var child in this.mEventsScrollView.Children())
-            {
-                T3DSkillEditorDataBase data = child.userData as T3DSkillEditorDataBase;
-                if (data.GetEventType() != SkillEventType.ANIMATION)
-                {
-                    continue;
-                }
-                float fTime = data.StartTime + data.GetDuration();
-                if (fTime > fSkillTime)
-                {
-                    fSkillTime = fTime;
-                }
-            }
-            return fSkillTime;
+            return sbText.ToString();
         }
     }
 }

@@ -22,6 +22,7 @@ namespace SkillEditor
         private bool mSimulating = false;               //是否开始播放
 
         public override SkillEventType GetEventType() { return SkillEventType.ATTACH_VFX; }
+        public override Color GetDisplayColor() { return new Color(1, 0.6f, 0.2f, 1); }
 
         public override void Init()
         {

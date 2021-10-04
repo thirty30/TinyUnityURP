@@ -20,6 +20,7 @@ namespace SkillEditor
         protected VisualElement mRootPanel = new VisualElement();
 
         public virtual SkillEventType GetEventType() { return SkillEventType.INVALID; }
+        public virtual Color GetDisplayColor() { return Color.white; }
         public virtual void Init() { }
         public virtual void Clear() { }
         public virtual void Update(float aDeltaTime) { }

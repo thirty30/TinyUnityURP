@@ -10,6 +10,8 @@ namespace SkillEditor
     public class T3DHitEditorData : T3DSkillEditorDataBase
     {
         public override SkillEventType GetEventType() { return SkillEventType.HIT; }
+        public override Color GetDisplayColor() { return Color.red; }
         public override bool IsPreviewing() { return false; }
+
     }
 }

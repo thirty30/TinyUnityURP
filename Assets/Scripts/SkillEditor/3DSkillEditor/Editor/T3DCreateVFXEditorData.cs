@@ -25,6 +25,7 @@ namespace SkillEditor
 
 
         public override SkillEventType GetEventType() { return SkillEventType.CREATE_VFX; }
+        public override Color GetDisplayColor() { return Color.yellow; }
 
         public override void Init()
         {

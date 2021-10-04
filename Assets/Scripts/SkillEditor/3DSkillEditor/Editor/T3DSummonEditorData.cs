@@ -10,6 +10,7 @@ namespace SkillEditor
     public class T3DSummonEditorData : T3DSkillEditorDataBase
     {
         public override SkillEventType GetEventType() { return SkillEventType.SUMMON; }
+        public override Color GetDisplayColor() { return Color.blue; }
         public override bool IsPreviewing() { return false; }
     }
 }
