@@ -6,9 +6,9 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace SkillEditor
+namespace TSkillEditor3D
 {
-    public class T3DSkillEditorMainWindow : EditorWindow
+    public class MainWindow : EditorWindow
     {
         private VisualElement mPropertyPanel = null;    //属性面板
         private ObjectField mAvatarObjField = null;     //用于演示的Animator对象
@@ -27,9 +27,9 @@ namespace SkillEditor
         [MenuItem("TTool/Skill Editor 3D")]
         public static void OpenEditor()
         {
-            T3DSkillEditorMainWindow win = GetWindow<T3DSkillEditorMainWindow>();
+            MainWindow win = GetWindow<MainWindow>();
             win.titleContent = new GUIContent("Skill Editor 3D");
-            win.minSize = new Vector2(910, 300);
+            win.minSize = new Vector2(1100, 300);
         }
 
         public void OnEnable()
@@ -37,7 +37,7 @@ namespace SkillEditor
             this.rootVisualElement.style.flexDirection = FlexDirection.Row;
 
             //左侧布局
-            VisualElement leftPanel = SkillEditorCommon.CreateVisualElement(this.rootVisualElement);
+            VisualElement leftPanel = CommonUtility.CreateVisualElement(this.rootVisualElement);
             leftPanel.style.width = Length.Percent(60);
             leftPanel.style.height = Length.Percent(100);
             leftPanel.style.flexDirection = FlexDirection.Column;
@@ -46,11 +46,11 @@ namespace SkillEditor
             this.LeftLayout(leftPanel);
 
             //右侧布局
-            this.mPropertyPanel = SkillEditorCommon.CreateVisualElement(this.rootVisualElement);
+            this.mPropertyPanel = CommonUtility.CreateVisualElement(this.rootVisualElement);
             this.mPropertyPanel.style.width = Length.Percent(40);
             this.mPropertyPanel.style.height = Length.Percent(100);
             this.mPropertyPanel.style.flexDirection = FlexDirection.Column;
-            SkillEditorCommon.CreateLable("Property", this.mPropertyPanel, 3, 3, 1, 1);
+            CommonUtility.CreateLable("Property", this.mPropertyPanel, 3, 3, 1, 1);
 
             
             this.mLastPreviewTime = EditorApplication.timeSinceStartup; //tick time
@@ -61,7 +61,7 @@ namespace SkillEditor
         {
             foreach (var child in this.mEventsScrollView.Children())
             {
-                (child.userData as T3DSkillEditorDataBase).Clear();
+                (child.userData as EventDataBase).Clear();
             }
             AnimationMode.StopAnimationMode();  
         }
@@ -73,7 +73,7 @@ namespace SkillEditor
 
             foreach (var child in this.mEventsScrollView.Children())
             {
-                (child.userData as T3DSkillEditorDataBase).Update(fDeltaTime);
+                (child.userData as EventDataBase).Update(fDeltaTime);
             }
 
             //预览
@@ -84,9 +84,9 @@ namespace SkillEditor
         private void LeftLayout(VisualElement aParentPanel)
         {
             //用于展示的角色动作对象
-            VisualElement rPanel = SkillEditorCommon.CreateVisualElement(aParentPanel);
+            VisualElement rPanel = CommonUtility.CreateVisualElement(aParentPanel);
             rPanel.style.flexDirection = FlexDirection.Row;
-            rPanel.style.minHeight = SkillEditorCommon.MinHeight;
+            rPanel.style.minHeight = CommonUtility.MinHeight;
             {
                 this.mAvatarObjField = new ObjectField("Avatar GameObject:");
                 this.mAvatarObjField.style.width = 400;
@@ -106,9 +106,9 @@ namespace SkillEditor
             }
 
             //技能数据文件
-            rPanel = SkillEditorCommon.CreateVisualElement(aParentPanel);
+            rPanel = CommonUtility.CreateVisualElement(aParentPanel);
             rPanel.style.flexDirection = FlexDirection.Row;
-            rPanel.style.minHeight = SkillEditorCommon.MinHeight;
+            rPanel.style.minHeight = CommonUtility.MinHeight;
             {
                 this.mSkillDataObjField = new ObjectField("Skill File:");
                 this.mSkillDataObjField.style.width = 400;
@@ -138,14 +138,14 @@ namespace SkillEditor
             //技能ID
             this.mSkillIDTextField = new IntegerField("Skill ID:");
             this.mSkillIDTextField.style.width = 400;
-            this.mSkillIDTextField.style.minHeight = SkillEditorCommon.MinHeight;
+            this.mSkillIDTextField.style.minHeight = CommonUtility.MinHeight;
             this.mSkillIDTextField.value = 0;
             aParentPanel.Add(this.mSkillIDTextField);
 
             //技能类型
             this.mSkillTypeField = new EnumField("Skill Type:", SKillType.ACTIVE);
             this.mSkillTypeField.style.width = 400;
-            this.mSkillTypeField.style.minHeight = SkillEditorCommon.MinHeight;
+            this.mSkillTypeField.style.minHeight = CommonUtility.MinHeight;
             aParentPanel.Add(this.mSkillTypeField);
 
             //事件区域
@@ -161,10 +161,11 @@ namespace SkillEditor
                 evt.menu.AppendAction(SkillEventType.ATTACH_VFX.ToString(), (x) => { this.OnCreateEvent(SkillEventType.ATTACH_VFX); });
                 evt.menu.AppendAction(SkillEventType.HIT.ToString(), (x) => { this.OnCreateEvent(SkillEventType.HIT); });
                 evt.menu.AppendAction(SkillEventType.SUMMON.ToString(), (x) => { this.OnCreateEvent(SkillEventType.SUMMON); });
+                evt.menu.AppendAction(SkillEventType.AUDIO.ToString(), (x) => { this.OnCreateEvent(SkillEventType.AUDIO); });
             }));
 
             //事件Title
-            SkillEditorCommon.CreateLable("Events", rBG, 3, 3, 1, 1);
+            CommonUtility.CreateLable("Events", rBG, 3, 3, 1, 1);
 
             //事件列表
             this.mEventsScrollView = new ScrollView();
@@ -180,7 +181,7 @@ namespace SkillEditor
             float fSkillTime = 0;
             foreach (var child in this.mEventsScrollView.Children())
             {
-                T3DSkillEditorDataBase data = child.userData as T3DSkillEditorDataBase;
+                EventDataBase data = child.userData as EventDataBase;
                 float fTime = data.StartTime + data.GetDuration();
                 if (fTime > fSkillTime)
                 {
@@ -197,7 +198,7 @@ namespace SkillEditor
             float fSkillTime = 0;
             foreach (var child in this.mEventsScrollView.Children())
             {
-                T3DSkillEditorDataBase data = child.userData as T3DSkillEditorDataBase;
+                EventDataBase data = child.userData as EventDataBase;
                 if (data.GetEventType() != SkillEventType.ANIMATION)
                 {
                     continue;
@@ -234,7 +235,7 @@ namespace SkillEditor
             this.mCurPreviewTime += aDeltaTime;
             foreach (var child in this.mEventsScrollView.Children())
             {
-                T3DSkillEditorDataBase data = child.userData as T3DSkillEditorDataBase;
+                EventDataBase data = child.userData as EventDataBase;
                 float fEndTime = data.StartTime + data.GetDuration();
                 if (this.mCurPreviewTime >= data.StartTime && this.mCurPreviewTime < fEndTime && data.IsPreviewing() == false)
                 {
@@ -255,7 +256,7 @@ namespace SkillEditor
         private void OnCreateEvent(SkillEventType aEventType)
         {
             if (aEventType == SkillEventType.INVALID) { return; }
-            T3DSkillEditorDataBase rEditorData = this.NewEditorData(aEventType);
+            EventDataBase rEditorData = this.NewEditorData(aEventType);
 
             Box rEventItem = new Box();
             this.mEventsScrollView.Add(rEventItem);
@@ -296,7 +297,7 @@ namespace SkillEditor
             rEditorData.EventName = aEventType.ToString();
             rEditorData.EventNameField = rEventNameTextField;
 
-            SkillEditorCommon.CreateLable("Start Time:", rEventItem, 0, 0, 0, 0);
+            CommonUtility.CreateLable("Start Time:", rEventItem, 0, 0, 0, 0);
 
             FloatField rStartTimeField = new FloatField();
             rEventItem.Add(rStartTimeField);
@@ -310,7 +311,7 @@ namespace SkillEditor
             });
             rEditorData.StartTimeField = rStartTimeField;
 
-            VisualElement rButtonPanel = SkillEditorCommon.CreateVisualElement(rEventItem);
+            VisualElement rButtonPanel = CommonUtility.CreateVisualElement(rEventItem);
             rButtonPanel.style.flexDirection = FlexDirection.Row;
             rButtonPanel.style.width = Length.Percent(100);
             rButtonPanel.style.alignItems = Align.Center;
@@ -322,7 +323,7 @@ namespace SkillEditor
             rMoveUp.text = "↑";
             rMoveUp.clicked += () =>
             {
-                //表现层
+                //表现上上移
                 int nIDX = this.mEventsScrollView.IndexOf(rEventItem);
                 if (nIDX == 0) { return; }
                 this.mEventsScrollView.RemoveAt(nIDX);
@@ -334,7 +335,7 @@ namespace SkillEditor
             rMoveDown.text = "↓";
             rMoveDown.clicked += () =>
             {
-                //表现层
+                //表现上下移
                 int nIDX = this.mEventsScrollView.IndexOf(rEventItem);
                 if (nIDX == this.mEventsScrollView.childCount - 1) { return; }
                 this.mEventsScrollView.RemoveAt(nIDX);
@@ -353,36 +354,40 @@ namespace SkillEditor
                     this.mLastSelectedEventItem = null;
                     //刷新属性面板
                     this.mPropertyPanel.Clear();
-                    SkillEditorCommon.CreateLable("Property", this.mPropertyPanel, 3, 3, 1, 1);
+                    CommonUtility.CreateLable("Property", this.mPropertyPanel, 3, 3, 1, 1);
                 }
                 this.mEventsScrollView.Remove(rEventItem);
                 rEditorData.Clear();
             };
         }
 
-        private T3DSkillEditorDataBase NewEditorData(SkillEventType aEventType)
+        private EventDataBase NewEditorData(SkillEventType aEventType)
         {
             //根据Event类型创建中间数据
-            T3DSkillEditorDataBase rEditorData = null;
+            EventDataBase rEditorData = null;
             if (aEventType == SkillEventType.ANIMATION)
             {
-                rEditorData = new T3DAnimationEditorData();
+                rEditorData = new AnimationEventData();
             }
             else if (aEventType == SkillEventType.CREATE_VFX)
             {
-                rEditorData = new T3DCreateVFXEditorData();
+                rEditorData = new CreateVFXEventData();
             }
             else if (aEventType == SkillEventType.ATTACH_VFX)
             {
-                rEditorData = new T3DAttachVFXEditorData();
+                rEditorData = new AttachVFXEventData();
             }
             else if (aEventType == SkillEventType.HIT)
             {
-                rEditorData = new T3DHitEditorData();
+                rEditorData = new HitEventData();
             }
             else if (aEventType == SkillEventType.SUMMON)
             {
-                rEditorData = new T3DSummonEditorData();
+                rEditorData = new SummonEventData();
+            }
+            else if (aEventType == SkillEventType.AUDIO)
+            {
+                rEditorData = new AudioEventData();
             }
             rEditorData.AvatarObjField = this.mAvatarObjField;
             rEditorData.Init();
@@ -403,17 +408,17 @@ namespace SkillEditor
             }
 
             this.mPropertyPanel.Clear();
-            SkillEditorCommon.CreateLable("Property", this.mPropertyPanel, 3, 3, 1, 1);
+            CommonUtility.CreateLable("Property", this.mPropertyPanel, 3, 3, 1, 1);
 
             if (this.mLastSelectedEventItem != null)
             {
                 this.mLastSelectedEventItem.style.backgroundColor = new Color(0, 0, 0, 0.1f);
-                (this.mLastSelectedEventItem.userData as T3DSkillEditorDataBase).LoseFocus();
+                (this.mLastSelectedEventItem.userData as EventDataBase).LoseFocus();
             }
 
             rItem.style.backgroundColor = new Color(0.5f, 0.5f, 0.5f, 0.2f);
             this.mLastSelectedEventItem = rItem;
-            T3DSkillEditorDataBase rSkillData = (rItem.userData as T3DSkillEditorDataBase);
+            EventDataBase rSkillData = (rItem.userData as EventDataBase);
             rSkillData.GetFocus();
             this.mPropertyPanel.Add(rSkillData.GetRootPanel());
         }
@@ -440,12 +445,12 @@ namespace SkillEditor
         {
             foreach (var child in this.mEventsScrollView.Children())
             {
-                (child.userData as T3DSkillEditorDataBase).Clear();
+                (child.userData as EventDataBase).Clear();
             }
             this.mSkillIDTextField.value = 0;
             this.mEventsScrollView.Clear();
             this.mPropertyPanel.Clear();
-            SkillEditorCommon.CreateLable("Property", this.mPropertyPanel, 3, 3, 1, 1);
+            CommonUtility.CreateLable("Property", this.mPropertyPanel, 3, 3, 1, 1);
             
             //加载数据
             TextAsset rSkillData = aEvt.newValue as TextAsset;
@@ -479,7 +484,7 @@ namespace SkillEditor
                 parms = line.Split(' ');
                 int nType = System.Convert.ToInt32(parms[0]);
                 this.OnCreateEvent((SkillEventType)nType);
-                T3DSkillEditorDataBase data = this.mEventsScrollView.ElementAt(nIDX).userData as T3DSkillEditorDataBase;
+                EventDataBase data = this.mEventsScrollView.ElementAt(nIDX).userData as EventDataBase;
                 data.LoadFromFile(line);
                 nIDX++;
             }
@@ -559,7 +564,7 @@ namespace SkillEditor
             //存事件
             foreach (var child in this.mEventsScrollView.Children())
             {
-                T3DSkillEditorDataBase data = child.userData as T3DSkillEditorDataBase;
+                EventDataBase data = child.userData as EventDataBase;
                 string strContent = data.SaveToFile();
                 if (strContent == string.Empty)
                 {

@@ -1,3 +1,4 @@
 1 0 1.50
 1 ANIMATION 0.00 attack Assets/Character/Animations/male@attack.fbx
 2 CREATE_VFX 0.00 0 0 0 270 0 0 Assets/VFX/TestSkill2/Prefabs/CartoonyBodySlam.prefab
+6 AUDIO 0.40 Assets/Audio/Sound/sword_attack.wav

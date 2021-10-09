@@ -5,12 +5,12 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace SkillEditor
+namespace TSkillEditor3D
 {
-    public class T3DAttachVFXEditorData : T3DSkillEditorDataBase
+    public class AttachVFXEventData : EventDataBase
     {
         //需要保存的数据
-        private SkillEffectAttachPart mAttachPart = SkillEffectAttachPart.FOOT; //附着对象
+        private EffectAttachPart mAttachPart = EffectAttachPart.FOOT; //附着对象
         private float mDuration = 0;    //持续时间
 
         //中间空间引用
@@ -30,10 +30,10 @@ namespace SkillEditor
             this.mEffectPrefabField.objectType = typeof(ParticleSystem);
             this.mRootPanel.Add(this.mEffectPrefabField);
 
-            this.mAttachPartField = new EnumField("Attach Part:", SkillEffectAttachPart.FOOT);
+            this.mAttachPartField = new EnumField("Attach Part:", EffectAttachPart.FOOT);
             this.mAttachPartField.RegisterCallback<ChangeEvent<System.Enum>>((aEvt) => 
             {
-                this.mAttachPart = (SkillEffectAttachPart)aEvt.newValue;
+                this.mAttachPart = (EffectAttachPart)aEvt.newValue;
             });
             this.mRootPanel.Add(this.mAttachPartField);
 
@@ -44,9 +44,9 @@ namespace SkillEditor
             });
             this.mRootPanel.Add(this.mDurationField);
 
-            VisualElement rPanel = SkillEditorCommon.CreateVisualElement(this.mRootPanel);
+            VisualElement rPanel = CommonUtility.CreateVisualElement(this.mRootPanel);
             rPanel.style.minHeight = 20;
-            SkillEditorCommon.CreateLable("Preview", this.mRootPanel, 3, 3, 1, 1);
+            CommonUtility.CreateLable("Preview", this.mRootPanel, 3, 3, 1, 1);
             Button rPreviewBtn = new Button();
             this.mRootPanel.Add(rPreviewBtn);
             rPreviewBtn.text = "Preview";
@@ -81,7 +81,7 @@ namespace SkillEditor
             base.LoadFromFile(aContent);
             string[] parms = aContent.Split(' ');
             this.mDurationField.value = this.mDuration = System.Convert.ToSingle(parms[3]);
-            this.mAttachPartField.value = this.mAttachPart = (SkillEffectAttachPart)System.Convert.ToInt32(parms[4]);
+            this.mAttachPartField.value = this.mAttachPart = (EffectAttachPart)System.Convert.ToInt32(parms[4]);
             this.mEffectPrefabField.value = AssetDatabase.LoadAssetAtPath<ParticleSystem>(parms[5]);
         }
 
@@ -126,11 +126,11 @@ namespace SkillEditor
             {
                 this.mEffectObj = GameObject.Instantiate(rPS);
                 GameObject rAvatar = this.AvatarObjField.value as GameObject;
-                if (this.mAttachPart == SkillEffectAttachPart.FOOT)
+                if (this.mAttachPart == EffectAttachPart.FOOT)
                 {
                     this.mEffectObj.transform.SetParent(rAvatar.transform, false);
                 }
-                else if (this.mAttachPart == SkillEffectAttachPart.WEAPON)
+                else if (this.mAttachPart == EffectAttachPart.WEAPON)
                 {
                     GameObject rMountNode = TFramework.LogicUtilTool.FindChildByName(rAvatar, "WeaponEffectMount");
                     this.mEffectObj.transform.SetParent(rMountNode.transform, true);

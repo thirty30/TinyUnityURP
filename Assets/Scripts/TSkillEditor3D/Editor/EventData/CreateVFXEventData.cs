@@ -5,9 +5,9 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace SkillEditor
+namespace TSkillEditor3D
 {
-    public class T3DCreateVFXEditorData : T3DSkillEditorDataBase
+    public class CreateVFXEventData : EventDataBase
     {
         //需要保存的数据
         private ObjectField mEffectPrefabField = null; //动作对象
@@ -41,9 +41,9 @@ namespace SkillEditor
             this.mRotationField.SetEnabled(false);
             this.mRootPanel.Add(this.mRotationField);
 
-            VisualElement rPanel = SkillEditorCommon.CreateVisualElement(this.mRootPanel);
+            VisualElement rPanel = CommonUtility.CreateVisualElement(this.mRootPanel);
             rPanel.style.minHeight = 20;
-            SkillEditorCommon.CreateLable("Preview", this.mRootPanel, 3, 3, 1, 1);
+            CommonUtility.CreateLable("Preview", this.mRootPanel, 3, 3, 1, 1);
             Button rPreviewBtn = new Button();
             this.mRootPanel.Add(rPreviewBtn);
             rPreviewBtn.text = "Preview";

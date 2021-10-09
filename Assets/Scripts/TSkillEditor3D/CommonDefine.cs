@@ -3,9 +3,9 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace SkillEditor
+namespace TSkillEditor3D
 {
-    public class SkillEditorCommon
+    public class CommonUtility
     {
         public const int MinHeight = 22;
 
@@ -43,32 +43,45 @@ namespace SkillEditor
         ATTACH_VFX,                 //生成一个依附特效
         HIT,                        //打击逻辑
         SUMMON,                     //召唤逻辑
+        AUDIO,                      //音效
     }
 
-    public enum SkillEffectAttachPart
+    public enum EffectAttachPart
     {
         FOOT,       //脚部
         WEAPON,     //武器
     }
 
-    public enum SKillDealTarget
+    public enum TargetType
     {
-        ALLY,
-        ENEMY,
+        ENEMY,  //敌方
+        ALLY,   //友方
+    }
+    
+    public enum HitAreaType
+    {
+        CURRENT_TARGET,     //当前独立对象
+        FAR_TARGET,         //最远的对象
+        LOW_HP_TARGET,      //血量最低的对象
+        ALL_TARGET,         //全体对象
+        RANDOM_TARGET,      //随机对象
+        SECTOR,             //扇形区域
+        CIRCLE,             //圆形区域
     }
 
-    public enum SKillHitRange
+    public enum HitEffect
     {
-        TARGET,
-        CIRCLE,
-        SECTOR,
+        DEAL_DAMAGE,        //造成伤害
+        ADD_BUFF,           //添加buff
+        KNOCK_DOWN,         //击倒
+        KNOCK_FLY,          //击飞
+        STUN,               //晕眩
     }
 
-    public enum SkillHitStatus
+    public enum DamageType
     {
-        DEAL_DAMAGE,
-        KNOCK_DOWN,
-        KNOCK_FLY,
-        STUN,
+        FORMULA,    //公式计算成长伤害
+        FIXED,      //定值伤害
+        PERCENT,    //百分比伤害
     }
 }

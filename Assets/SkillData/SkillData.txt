@@ -4,4 +4,4 @@
 2 CREATE_VFX 0.40 -3.732765 0.89089 0.883 341.75 41.18999 180 Assets/VFX/TestSkill1/Prefabs/SwordSlash16.prefab
 2 CREATE_VFX 0.60 -5.687995 2.522419 0.891 0 0 0 Assets/VFX/TestSkill1/Prefabs/Slashes.prefab
 3 ATTACH_VFX 0.00 2 1 Assets/VFX/TestSkill2/Prefabs/SpikyFireTrail.prefab
-
+6 AUDIO 0.40 Assets/Audio/Sound/sword_attack.wav

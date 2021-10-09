@@ -5,9 +5,9 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace SkillEditor
+namespace TSkillEditor3D
 {
-    public abstract class T3DSkillEditorDataBase
+    public abstract class EventDataBase
     {
         //需要保存的数据
         public string EventName = string.Empty;

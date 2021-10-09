@@ -5,9 +5,9 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace SkillEditor
+namespace TSkillEditor3D
 {
-    public class T3DAnimationEditorData : T3DSkillEditorDataBase
+    public class AnimationEventData : EventDataBase
     {
         //需要保存的数据
         private ObjectField mAnimationClipField = null; //动作对象
@@ -27,15 +27,15 @@ namespace SkillEditor
             this.mAnimationClipField.objectType = typeof(AnimationClip);
             this.mRootPanel.Add(this.mAnimationClipField);
 
-            VisualElement rPanel = SkillEditorCommon.CreateVisualElement(this.mRootPanel);
+            VisualElement rPanel = CommonUtility.CreateVisualElement(this.mRootPanel);
             rPanel.style.minHeight = 20;
-            SkillEditorCommon.CreateLable("Preview", this.mRootPanel, 3, 3, 1, 1);
+            CommonUtility.CreateLable("Preview", this.mRootPanel, 3, 3, 1, 1);
 
-            rPanel = SkillEditorCommon.CreateVisualElement(this.mRootPanel);
+            rPanel = CommonUtility.CreateVisualElement(this.mRootPanel);
             rPanel.style.flexDirection = FlexDirection.Row;
             {
-                SkillEditorCommon.CreateLable("Current Time:", rPanel, 3, 3, 1, 1);
-                this.mCurAnimationTimeLabel = SkillEditorCommon.CreateLable("0", rPanel, 3, 3, 1, 1);
+                CommonUtility.CreateLable("Current Time:", rPanel, 3, 3, 1, 1);
+                this.mCurAnimationTimeLabel = CommonUtility.CreateLable("0", rPanel, 3, 3, 1, 1);
                 this.mCurAnimationTimeLabel.style.width = 40;
 
                 this.mAnimationProgress = new Slider(0, 1);
