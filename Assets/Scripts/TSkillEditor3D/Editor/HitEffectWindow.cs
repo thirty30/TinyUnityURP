@@ -7,15 +7,8 @@ using UnityEditor.UIElements;
 
 namespace TSkillEditor3D
 {
-    public class HitEffectData
-    {
-        public object[] Parms; 
-    }
-
     public class HitEffectWindow
     {
-        private List<HitEffectData> mEffects = new List<HitEffectData>();
-
         private VisualElement mRootPanel = null;
         private Button mAddHitEffectBtn = null;
         private EnumField mHitEffectField = null;
@@ -38,12 +31,57 @@ namespace TSkillEditor3D
 
         public void LoadData(string aContent)
         {
+            string[] strEffects = aContent.Split(' ');
+            for (int i = 0; i < strEffects.Length; i++)
+            {
+                string[] strParms = strEffects[i].Split('|');
+                HitEffect rEffectType = (HitEffect)System.Convert.ToInt32(strParms[0]);
+                if (rEffectType == HitEffect.DEAL_DAMAGE)
+                {
 
+                }
+                else if (rEffectType == HitEffect.ADD_BUFF)
+                {
+
+                }
+                else if (rEffectType == HitEffect.KNOCK_DOWN
+                    || rEffectType == HitEffect.KNOCK_FLY
+                    || rEffectType == HitEffect.STUN)
+                {
+
+                }
+            }
         }
 
         public string SaveData()
         {
-            return "";
+            string strContent = "";
+            foreach(VisualElement child in this.mRootPanel.Children())
+            {
+                EnumField rEffectTypeField = child.ElementAt(1) as EnumField;
+                VisualElement rExtendPanel = child.ElementAt(2) as VisualElement;
+                HitEffect rEffectType = (HitEffect)rEffectTypeField.value;
+                if (rEffectType == HitEffect.DEAL_DAMAGE)
+                {
+                    EnumField rDamageTypeField = rExtendPanel.ElementAt(0) as EnumField;
+                    DamageType rDamageType = (DamageType)rDamageTypeField.value;
+                    FloatField rValueField = rExtendPanel.ElementAt(1) as FloatField;
+                    strContent += string.Format("{0}|{1}|{2} ", (int)rEffectType, (int)rDamageType, rValueField.value);
+                }
+                else if (rEffectType == HitEffect.ADD_BUFF)
+                {
+                    IntegerField rBuffIDField = rExtendPanel.ElementAt(0) as IntegerField;
+                    strContent += string.Format("{0}|{1} ", (int)rEffectType, rBuffIDField.value);
+                }
+                else if (rEffectType == HitEffect.KNOCK_DOWN
+                    || rEffectType == HitEffect.KNOCK_FLY
+                    || rEffectType == HitEffect.STUN)
+                {
+                    FloatField rTimeField = rExtendPanel.ElementAt(0) as FloatField;
+                    strContent += string.Format("{0}|{1} ", (int)rEffectType, rTimeField.value);
+                }
+            }
+            return strContent;
         }
 
         private void OnClickAddEffect()
@@ -58,7 +96,6 @@ namespace TSkillEditor3D
             rItem.style.width = Length.Percent(98);
             rItem.style.height = 30;
             rItem.style.alignItems = Align.Center;
-            //rEventItem.userData = rEditorData;
 
             //É¾³ý°´Å¥
             Button rDel = new Button();
@@ -114,7 +151,7 @@ namespace TSkillEditor3D
             {
                 CommonUtility.CreateLable("Buff ID:", rExtendPanel, 0, 0, 0, 0);
                 IntegerField rValueField = new IntegerField();
-                rValueField.style.width = 50;
+                rValueField.style.width = 100;
                 rExtendPanel.Add(rValueField);
             }
             else if (rEffectType == HitEffect.KNOCK_DOWN 
@@ -123,7 +160,7 @@ namespace TSkillEditor3D
             {
                 CommonUtility.CreateLable("Time:", rExtendPanel, 0, 0, 0, 0);
                 FloatField rValueField = new FloatField();
-                rValueField.style.width = 50;
+                rValueField.style.width = 100;
                 rExtendPanel.Add(rValueField);
             }
         }
