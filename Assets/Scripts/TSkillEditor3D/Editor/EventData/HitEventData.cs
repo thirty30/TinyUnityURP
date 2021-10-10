@@ -23,7 +23,6 @@ namespace TSkillEditor3D
         private FloatField mAvailableRadiusField = null;
         private FloatField mAngleField = null;
         private FloatField mRadiusField = null;
-        private Button mAddHitEffectBtn = null;
         private HitEffectWindow mHitEffectField = null;
 
         private T3DSkillEditorAttackArea mAreaObject = null;
@@ -86,6 +85,7 @@ namespace TSkillEditor3D
             {
                 GameObject go = new GameObject("HitArea");
                 this.mAreaObject = go.AddComponent<T3DSkillEditorAttackArea>();
+                this.RefreshHitArea();
             }
         }
 
@@ -95,6 +95,44 @@ namespace TSkillEditor3D
             {
                 GameObject.DestroyImmediate(this.mAreaObject.gameObject);
             }
+        }
+
+        public override void LoadFromFile(string aContent)
+        {
+            base.LoadFromFile(aContent);
+            // Ù–‘–Ú¡–
+            //0       1         2         3          4        5               6     7      8...
+            //EventID EventName StartTime TargetType AreaType AvailableRadius Angle Radius HitEffects
+            string[] parms = aContent.Split(' ');
+            this.mTargetTypeField.value = this.mTargetType = (TargetType)System.Convert.ToInt32(parms[3]);
+            this.mHitAreaField.value = this.mAreaType = (HitAreaType)System.Convert.ToInt32(parms[4]);
+            this.mAvailableRadius = System.Convert.ToSingle(parms[5]);
+            this.mAngle = System.Convert.ToSingle(parms[6]);
+            this.mRadius = System.Convert.ToSingle(parms[7]);
+            this.RestoreExtendPanel();
+            string strEffects = "";
+            for (int i = 8; i < parms.Length; i++)
+            {
+                strEffects += parms[i] + " ";
+            }
+            if (strEffects.Length > 0)
+            {
+                strEffects = strEffects.Remove(strEffects.Length - 1);
+                this.mHitEffectField.LoadData(strEffects);
+            }
+        }
+
+        public override string SaveToFile()
+        {
+            return string.Format("{0} {1} {2} {3} {4} {5} {6}",
+                base.SaveToFile(), 
+                (int)this.mTargetType, 
+                (int)this.mAreaType, 
+                this.mAvailableRadius, 
+                this.mAngle,
+                this.mRadius,
+                this.mHitEffectField.SaveData()
+                );
         }
 
         public override bool IsPreviewing() { return false; }
@@ -141,6 +179,15 @@ namespace TSkillEditor3D
         private void OnChangedHitAreaType(ChangeEvent<System.Enum> aEvt)
         {
             this.mAreaType = (HitAreaType)aEvt.newValue;
+            this.mAvailableRadius = 0;
+            this.mAngle = 0;
+            this.mRadius = 0;
+
+            this.RestoreExtendPanel();
+        }
+
+        private void RestoreExtendPanel()
+        {
             this.mHitAreaExtendPanel.Clear();
 
             switch (this.mAreaType)
@@ -150,25 +197,21 @@ namespace TSkillEditor3D
                 case HitAreaType.ALL_TARGET:
                 case HitAreaType.RANDOM_TARGET:
                     {
-                        this.mAvailableRadiusField.value = 0;
-                        this.mAvailableRadius = 0;
+                        this.mAvailableRadiusField.value = this.mAvailableRadius;
                         this.mHitAreaExtendPanel.Add(this.mAvailableRadiusField);
                     }
                     break;
                 case HitAreaType.SECTOR:
                     {
-                        this.mAngleField.value = 0;
-                        this.mRadiusField.value = 0;
-                        this.mAngle = 0;
-                        this.mRadius = 0;
+                        this.mAngleField.value = this.mAngle;
+                        this.mRadiusField.value = this.mRadius;
                         this.mHitAreaExtendPanel.Add(this.mAngleField);
                         this.mHitAreaExtendPanel.Add(this.mRadiusField);
                     }
                     break;
                 case HitAreaType.CIRCLE:
                     {
-                        this.mRadiusField.value = 0;
-                        this.mRadius = 0;
+                        this.mRadiusField.value = this.mRadius;
                         this.mHitAreaExtendPanel.Add(this.mRadiusField);
                     }
                     break;

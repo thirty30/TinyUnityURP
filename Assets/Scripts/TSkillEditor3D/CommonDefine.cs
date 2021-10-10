@@ -84,4 +84,10 @@ namespace TSkillEditor3D
         FIXED,      //定值伤害
         PERCENT,    //百分比伤害
     }
+
+    public enum SummonPosition
+    {
+        TARGET,
+
+    }
 }

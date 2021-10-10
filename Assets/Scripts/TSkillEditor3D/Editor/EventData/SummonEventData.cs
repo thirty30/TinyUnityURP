@@ -11,6 +11,12 @@ namespace TSkillEditor3D
     {
         public override SkillEventType GetEventType() { return SkillEventType.SUMMON; }
         public override Color GetDisplayColor() { return Color.blue; }
+
+        public override void Init()
+        {
+            
+        }
+
         public override bool IsPreviewing() { return false; }
     }
 }
